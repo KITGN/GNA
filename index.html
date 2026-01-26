@@ -1,0 +1,3877 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Семейное древо</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          145deg,
+          #0f0c29 0%,
+          #1a1a2e 25%,
+          #16213e 50%,
+          #1a1a2e 75%,
+          #0f0c29 100%
+        );
+        color: #fff;
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+        font-family: "Segoe UI", sans-serif;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        will-change: transform;
+      }
+
+      /* Разрешаем выделение только в полях ввода */
+      input,
+      textarea,
+      .form-input,
+      [contenteditable="true"] {
+        user-select: text;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+      }
+
+      /* Отключаем перетаскивание изображений */
+      img,
+      .photo,
+      .details-photo-img,
+      .details-photo-gif {
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        pointer-events: none;
+      }
+
+      /* Контейнер для звездного неба */
+      #starfield {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      /* Слой 1: Дальние звезды (мелкие, медленные) */
+      .stars-layer-1 {
+        position: absolute;
+        width: 300%;
+        height: 300%;
+        background-image:
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x1)) calc(1% * var(--random-y1)),
+            rgba(255, 255, 255, 0.6) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x2)) calc(1% * var(--random-y2)),
+            rgba(255, 255, 255, 0.5) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x3)) calc(1% * var(--random-y3)),
+            rgba(255, 255, 255, 0.4) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x4)) calc(1% * var(--random-y4)),
+            rgba(255, 255, 255, 0.5) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x5)) calc(1% * var(--random-y5)),
+            rgba(255, 255, 255, 0.3) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x6)) calc(1% * var(--random-y6)),
+            rgba(255, 255, 255, 0.6) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x7)) calc(1% * var(--random-y7)),
+            rgba(255, 255, 255, 0.4) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x8)) calc(1% * var(--random-y8)),
+            rgba(255, 255, 255, 0.5) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x9)) calc(1% * var(--random-y9)),
+            rgba(255, 255, 255, 0.3) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at calc(1% * var(--random-x10)) calc(1% * var(--random-y10)),
+            rgba(255, 255, 255, 0.6) 1px,
+            transparent 2px
+          );
+        background-size: 500px 500px;
+        opacity: 0.4;
+        animation: twinkle-slow 15s infinite ease-in-out;
+        transform-origin: center center;
+      }
+
+      /* Слой 2: Средние звезды */
+      .stars-layer-2 {
+        position: absolute;
+        width: 400%;
+        height: 400%;
+        background-image:
+          radial-gradient(
+            1.5px 1.5px at calc(1% * var(--random-x11))
+              calc(1% * var(--random-y11)),
+            rgba(255, 255, 255, 0.8) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1.5px 1.5px at calc(1% * var(--random-x12))
+              calc(1% * var(--random-y12)),
+            rgba(255, 255, 255, 0.7) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1.5px 1.5px at calc(1% * var(--random-x13))
+              calc(1% * var(--random-y13)),
+            rgba(255, 255, 255, 0.9) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1.5px 1.5px at calc(1% * var(--random-x14))
+              calc(1% * var(--random-y14)),
+            rgba(255, 255, 255, 0.6) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1.5px 1.5px at calc(1% * var(--random-x15))
+              calc(1% * var(--random-y15)),
+            rgba(255, 255, 255, 0.8) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1.5px 1.5px at calc(1% * var(--random-x16))
+              calc(1% * var(--random-y16)),
+            rgba(255, 255, 255, 0.7) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1.5px 1.5px at calc(1% * var(--random-x17))
+              calc(1% * var(--random-y17)),
+            rgba(255, 255, 255, 0.9) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1.5px 1.5px at calc(1% * var(--random-x18))
+              calc(1% * var(--random-y18)),
+            rgba(255, 255, 255, 0.6) 1px,
+            transparent 2px
+          );
+        background-size: 800px 800px;
+        opacity: 0.6;
+        animation: twinkle-medium 12s infinite ease-in-out;
+        transform-origin: center center;
+      }
+
+      /* Слой 3: Ближние звезды (крупные, яркие) */
+      .stars-layer-3 {
+        position: absolute;
+        width: 600%;
+        height: 600%;
+        background-image:
+          radial-gradient(
+            2px 2px at calc(1% * var(--random-x19)) calc(1% * var(--random-y19)),
+            rgba(255, 255, 255, 1) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            2px 2px at calc(1% * var(--random-x20)) calc(1% * var(--random-y20)),
+            rgba(255, 255, 255, 0.9) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            3px 3px at calc(1% * var(--random-x21)) calc(1% * var(--random-y21)),
+            rgba(255, 255, 255, 1) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            2px 2px at calc(1% * var(--random-x22)) calc(1% * var(--random-y22)),
+            rgba(255, 255, 255, 0.9) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            3px 3px at calc(1% * var(--random-x23)) calc(1% * var(--random-y23)),
+            rgba(255, 255, 255, 1) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            2px 2px at calc(1% * var(--random-x24)) calc(1% * var(--random-y24)),
+            rgba(255, 255, 255, 0.9) 1px,
+            transparent 2px
+          );
+        background-size: 1200px 1200px;
+        opacity: 0.8;
+        animation: twinkle-fast 8s infinite ease-in-out;
+        transform-origin: center center;
+      }
+
+      /* Цветные звезды (редкие) */
+      .stars-layer-colors {
+        position: absolute;
+        width: 500%;
+        height: 500%;
+        background-image:
+          radial-gradient(
+            2px 2px at calc(1% * var(--random-x25)) calc(1% * var(--random-y25)),
+            rgba(173, 216, 230, 0.8) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            2px 2px at calc(1% * var(--random-x26)) calc(1% * var(--random-y26)),
+            rgba(221, 160, 221, 0.8) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            2px 2px at calc(1% * var(--random-x27)) calc(1% * var(--random-y27)),
+            rgba(135, 206, 250, 0.8) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            3px 3px at calc(1% * var(--random-x28)) calc(1% * var(--random-y28)),
+            rgba(255, 182, 193, 0.8) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            2px 2px at calc(1% * var(--random-x29)) calc(1% * var(--random-y29)),
+            rgba(144, 238, 144, 0.8) 1px,
+            transparent 2px
+          );
+        background-size: 1500px 1500px;
+        opacity: 0.5;
+        animation: twinkle-colors 20s infinite ease-in-out;
+        transform-origin: center center;
+      }
+
+      #treeContainer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        cursor: grab;
+      }
+
+      #treeContainer.grabbing {
+        cursor: grabbing;
+      }
+
+      #treeContainer.dragging-person {
+        cursor: default;
+      }
+
+      #tree {
+        position: absolute;
+        min-width: 2000px;
+        min-height: 1200px;
+        transform-origin: 0 0;
+      }
+
+      .generation {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .person {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        cursor: pointer;
+        transition: filter 0.2s;
+        z-index: 10;
+        pointer-events: auto;
+        transform-origin: center center;
+      }
+
+      .person.dragging {
+        z-index: 100;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        cursor: grabbing;
+      }
+
+      .person:hover {
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+      }
+
+      .person.active {
+        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+      }
+
+      .photo-container {
+        width: 90px;
+        height: 120px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        background-color: rgba(40, 40, 40, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: auto;
+      }
+
+      .person:hover .photo-container {
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .person.active .photo-container {
+        border-color: rgba(255, 255, 255, 0.7);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      }
+
+      .photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .no-photo {
+        font-size: 32px;
+        color: rgba(255, 255, 255, 0.3);
+      }
+
+      .name {
+        font-weight: 500;
+        font-size: 14px;
+        text-align: center;
+        max-width: 140px;
+        color: #f0f0f0;
+        background-color: rgba(0, 0, 0, 0.25);
+        padding: 4px 8px;
+        border-radius: 6px;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        width: 140px;
+        min-height: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        line-height: 1.2;
+      }
+
+      .surname {
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .firstname {
+        font-size: 11px;
+        margin: 1px 0;
+        font-weight: normal;
+      }
+
+      .middlename {
+        font-size: 11px;
+        color: #d0d0d0;
+        font-weight: normal;
+      }
+
+      .tree-connections {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: visible;
+      }
+
+      .line-path {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.25);
+        stroke-width: 2;
+        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+      }
+
+      .heart-symbol {
+        fill: rgba(255, 105, 180, 0.8);
+        filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.6));
+      }
+
+      .details-panel {
+        position: absolute;
+        width: 320px;
+        background: rgba(30, 30, 30, 0.95);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 100;
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+        transition:
+          opacity 0.15s,
+          transform 0.15s;
+        pointer-events: none;
+        box-shadow:
+          0 20px 40px rgba(0, 0, 0, 0.3),
+          0 10px 20px rgba(0, 0, 0, 0.2),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+
+      .details-panel.active {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+
+      .details-photo {
+        width: 280px;
+        height: 340px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 0 auto 15px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background-color: rgba(40, 40, 40, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .details-photo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .details-name {
+        font-size: 1.3rem;
+        text-align: center;
+        margin-bottom: 15px;
+        color: #f0f0f0;
+        line-height: 1.3;
+      }
+
+      .details-surname {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .details-firstname {
+        display: block;
+        font-size: 12px;
+        margin: 2px 0;
+        font-weight: normal;
+      }
+
+      .details-middlename {
+        display: block;
+        font-size: 12px;
+        color: #d0d0d0;
+        font-weight: normal;
+      }
+
+      .details-info {
+        margin-top: 15px;
+      }
+
+      .info-item {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+      }
+
+      .info-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      .info-label {
+        font-weight: 500;
+        color: #a0a0a0;
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.85rem;
+      }
+
+      .info-value {
+        color: #fff;
+        font-size: 0.95rem;
+      }
+
+      .controls {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 50;
+        display: flex;
+        gap: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+
+      .controls.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .control-btn {
+        padding: 10px 20px;
+        background: rgba(30, 30, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        backdrop-filter: blur(5px);
+        transition: background 0.3s;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .control-btn:hover {
+        background: rgba(60, 60, 60, 0.9);
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(30, 30, 30, 0.9);
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #fff;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: 1000;
+        pointer-events: none;
+      }
+
+      .notification.show {
+        opacity: 1;
+      }
+
+      .edit-panel,
+      .save-version-panel,
+      .load-version-panel {
+        position: fixed;
+        background: rgba(35, 35, 35, 0.98);
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        z-index: 200;
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+        pointer-events: none;
+        max-height: 85vh;
+        overflow-y: auto;
+      }
+
+      /* Отключаем контекстное меню на изображениях */
+      img {
+        -webkit-touch-callout: none;
+      }
+
+      .edit-panel.active,
+      .save-version-panel.active,
+      .load-version-panel.active {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+
+      .edit-panel {
+        width: 420px;
+      }
+
+      .save-version-panel {
+        width: 400px;
+      }
+
+      .load-version-panel {
+        width: 500px;
+        max-height: 70vh;
+      }
+
+      .edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .form-label {
+        font-weight: 500;
+        color: #a0a0a0;
+        font-size: 0.9rem;
+      }
+
+      .form-input {
+        padding: 10px;
+        background: rgba(50, 50, 50, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        color: white;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: rgba(255, 105, 180, 0.5);
+      }
+
+      .form-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .form-btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 13px;
+        transition: background 0.3s;
+        flex: 1;
+      }
+
+      .save-btn {
+        background: rgba(255, 105, 180, 0.8);
+        color: white;
+      }
+
+      .save-btn:hover {
+        background: rgba(255, 105, 180, 1);
+      }
+
+      .cancel-btn {
+        background: rgba(100, 100, 100, 0.8);
+        color: white;
+      }
+
+      .cancel-btn:hover {
+        background: rgba(120, 120, 120, 1);
+      }
+
+      .delete-btn {
+        background: rgba(220, 53, 69, 0.8);
+        color: white;
+      }
+
+      .delete-btn:hover {
+        background: rgba(220, 53, 69, 1);
+      }
+
+      .parents-selection {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 10px;
+        background: rgba(50, 50, 50, 0.5);
+      }
+
+      .version-list {
+        margin-top: 15px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .version-item {
+        background: rgba(50, 50, 50, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .version-item:hover {
+        background: rgba(70, 70, 70, 0.8);
+      }
+
+      .version-name {
+        font-weight: 500;
+        font-size: 16px;
+      }
+
+      .version-date {
+        font-size: 12px;
+        color: #a0a0a0;
+        margin-top: 5px;
+      }
+
+      .version-info {
+        font-size: 12px;
+        color: #a0a0a0;
+        margin-top: 3px;
+      }
+
+      .file-input-container {
+        margin-top: 10px;
+      }
+
+      .file-input-label {
+        display: inline-block;
+        padding: 8px 12px;
+        background: rgba(255, 105, 180, 0.6);
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s;
+        font-size: 13px;
+      }
+
+      .file-input-label:hover {
+        background: rgba(255, 105, 180, 0.8);
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .spouse-pair {
+        display: flex;
+        align-items: center;
+        margin: 0 40px;
+        position: relative;
+      }
+
+      .spouse-pair .person {
+        margin: 0 10px;
+      }
+
+      .edit-profession-btn {
+        background: rgba(190, 190, 190, 0.3);
+        border: none;
+        padding: 3px 3px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-left: 10px;
+        transition: background 0.3s;
+      }
+
+      .edit-profession-btn:hover {
+        background: rgba(190, 190, 190, 0.6);
+      }
+
+      .hearts-panel {
+        margin-top: 10px;
+        padding-top: 10px;
+      }
+
+      .hearts-list {
+        max-height: 150px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+      }
+
+      .heart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        background: rgba(50, 50, 50, 0.5);
+        border-radius: 4px;
+        margin-bottom: 5px;
+      }
+
+      .heart-names {
+        font-size: 13px;
+      }
+
+      .remove-heart-btn {
+        background: rgba(220, 53, 69, 0.6);
+        color: white;
+        border: none;
+        padding: 3px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      .remove-heart-btn:hover {
+        background: rgba(220, 53, 69, 0.8);
+      }
+
+      .add-heart-section {
+        margin-top: 10px;
+        display: flex;
+      }
+
+      .parents-columns {
+        display: flex;
+        gap: 15px;
+      }
+
+      .parents-column {
+        flex: 1;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        overflow: hidden;
+        max-height: 200px;
+      }
+
+      .parents-column-title {
+        background: rgba(255, 105, 180, 0.2);
+        padding: 8px 12px;
+        font-weight: 500;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .parents-list {
+        max-height: 150px;
+        overflow-y: auto;
+        padding: 10px;
+      }
+
+      .parent-checkbox {
+        margin-bottom: 8px;
+        padding: 6px 8px;
+        border-radius: 4px;
+        transition: background 0.2s;
+      }
+
+      .parent-checkbox:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .parent-checkbox label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .parent-checkbox-input {
+        margin-right: 8px;
+      }
+
+      .parent-checkbox-input:checked {
+        accent-color: #ff69b4;
+      }
+
+      .parent-name {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .hearts-panel .info-label {
+        color: #ff69b4;
+      }
+
+      .children-selection {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 10px;
+        background: rgba(50, 50, 50, 0.5);
+        margin-top: 15px;
+        max-height: 200px;
+        overflow: hidden;
+      }
+
+      .children-list {
+        max-height: 150px;
+        overflow-y: auto;
+        padding: 10px;
+      }
+
+      .children-columns {
+        display: flex;
+        gap: 15px;
+      }
+
+      .children-column {
+        flex: 1;
+      }
+
+      .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        padding: 5px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .page-btn {
+        background: rgba(255, 105, 180, 0.3);
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.3s;
+      }
+
+      .page-btn:hover {
+        background: rgba(255, 105, 180, 0.5);
+      }
+
+      .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .page-info {
+        font-size: 12px;
+        color: #a0a0a0;
+      }
+
+      .generation-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .gen-btn {
+        background: rgba(255, 105, 180, 0.3);
+        color: white;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      .gen-btn:hover {
+        background: rgba(255, 105, 180, 0.5);
+      }
+
+      .hint {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(30, 30, 30, 0.2);
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 11px;
+        color: #a0a0a0;
+        backdrop-filter: blur(5px);
+      }
+
+      /* Анимации мерцания */
+      @keyframes twinkle-slow {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      @keyframes twinkle-medium {
+        0%,
+        100% {
+          opacity: 0.4;
+        }
+
+        50% {
+          opacity: 0.8;
+        }
+      }
+
+      @keyframes twinkle-fast {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes twinkle-colors {
+        0%,
+        100% {
+          opacity: 0.2;
+        }
+
+        50% {
+          opacity: 0.7;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls" id="controls">
+      <button class="control-btn" id="saveBtn">
+        <i class="fas fa-save"></i> Сохранить
+      </button>
+      <button class="control-btn" id="loadBtn">
+        <i class="fas fa-folder-open"></i> Загрузить
+      </button>
+      <button class="control-btn" id="addBtn">
+        <i class="fas fa-user-plus"></i> Добавить
+      </button>
+    </div>
+
+    <div class="tree-container" id="treeContainer">
+      <div class="tree" id="tree"></div>
+    </div>
+
+    <div class="hint">
+      <i class="fas fa-mouse-pointer"></i> ЛКМ — перемещение | Колесико —
+      масштаб | Клик по человеку — показать/скрыть детали | Ё - возврат масштаба
+    </div>
+    <div class="notification" id="notification"></div>
+
+    <script>
+      // Добавьте в начале скрипта
+      let isPageVisible = true;
+
+      // Оптимизация при скрытии вкладки
+      document.addEventListener("visibilitychange", function () {
+        isPageVisible = !document.hidden;
+
+        if (!isPageVisible) {
+          // При скрытии вкладки останавливаем анимации
+          document.body.style.animationPlayState = "paused";
+        } else {
+          document.body.style.animationPlayState = "running";
+        }
+      });
+
+      const defaultFamilyMembers = [];
+      const PRELOAD_TREE_FILE = "FamilyTree.json";
+
+      let scale = 1;
+      let offsetX = 0;
+      let offsetY = 0;
+      let isDragging = false;
+      let startX, startY;
+      let activePersonId = null;
+      let detailsPanel = null;
+      let svgContainer = null;
+      let familyMembers = [];
+      let nextId = 1;
+      let maxGeneration = 1;
+      let isMouseOverPanel = false;
+      let isDraggingPerson = false;
+      let draggedPerson = null;
+      let dragOffsetX = 0;
+      let dragOffsetY = 0;
+      let editMode = false;
+      let isMouseOverPerson = false;
+      let clickTimer = null;
+      let isClick = true;
+      let parentsPage = { male: 1, female: 1 };
+      let childrenPage = 1;
+      const ITEMS_PER_PAGE = 4;
+
+      // Добавьте эту функцию в начале скрипта (после объявления переменных)
+      function preventImageDrag() {
+        // Отключаем dragstart для всех изображений
+        document.addEventListener("dragstart", function (e) {
+          if (e.target.tagName === "IMG") {
+            e.preventDefault();
+            return false;
+          }
+        });
+
+        // Отключаем контекстное меню на изображениях
+        document.addEventListener("contextmenu", function (e) {
+          if (e.target.tagName === "IMG") {
+            e.preventDefault();
+            return false;
+          }
+        });
+
+        // Добавляем атрибуты для изображений
+        document.querySelectorAll("img").forEach((img) => {
+          img.setAttribute("draggable", "false");
+          img.style.pointerEvents = "none";
+        });
+      }
+
+      // Вызываем функцию при загрузке
+      window.addEventListener("DOMContentLoaded", function () {
+        preventImageDrag();
+        // ... остальной код инициализации ...
+      });
+
+      function initializeData() {
+        familyMembers = [...defaultFamilyMembers];
+        nextId = 1;
+        maxGeneration = 1;
+      }
+
+      function rebindAllEventListeners() {
+        // Удаляем старые обработчики
+        document.removeEventListener("keydown", handleGlobalKeydown);
+
+        // Добавляем новые
+        addEventListeners();
+        bindControlButtons();
+
+        // Перепривязываем обработчик для Ctrl+Alt
+        document.addEventListener("keydown", handleGlobalKeydown);
+      }
+
+      function handleGlobalKeydown(e) {
+        if (e.ctrlKey && e.altKey) {
+          e.preventDefault();
+          toggleEditMode();
+        }
+
+        if (e.key === "F5") {
+          e.preventDefault();
+          drawConnections();
+          showNotification("Линии обновлены");
+        }
+
+        if (e.key === "Escape") {
+          e.preventDefault();
+          hidePersonDetails();
+          hideAddHeartPanel();
+          hideSaveVersionPanel();
+          hideLoadVersionsPanel();
+          hideAddPersonForm();
+          hideEditPhotoPanel();
+        }
+        if (
+          e.key === "`" ||
+          e.key === "~" ||
+          e.key === "ё" ||
+          e.key === "Ё" ||
+          e.keyCode === 192 ||
+          e.keyCode === 221
+        ) {
+          e.preventDefault();
+          resetToDefaultZoom();
+        }
+      }
+
+      async function loadInitialTree() {
+        if (PRELOAD_TREE_FILE) {
+          try {
+            const response = await fetch(PRELOAD_TREE_FILE);
+            if (!response.ok) throw new Error("Файл не найден");
+            const data = await response.json();
+            if (!data.members || !Array.isArray(data.members))
+              throw new Error("Неверный формат файла");
+
+            familyMembers = data.members;
+            nextId =
+              data.nextId || Math.max(...familyMembers.map((m) => m.id)) + 1;
+            maxGeneration =
+              data.maxGeneration ||
+              Math.max(...familyMembers.map((m) => m.generation));
+
+            familyMembers.forEach((member, index) => {
+              if (member.x === undefined || member.y === undefined) {
+                const generation = member.generation || 1;
+                const genMembers = familyMembers.filter(
+                  (m) => m.generation === generation,
+                );
+                const memberIndex = genMembers.findIndex(
+                  (m) => m.id === member.id,
+                );
+                member.x = (memberIndex - (genMembers.length - 1) / 2) * 250;
+                member.y = (generation - 1) * 300;
+              }
+            });
+
+            generateFamilyTree();
+            showNotification(
+              `Загружено дерево из файла: "${PRELOAD_TREE_FILE}"`,
+            );
+          } catch (error) {
+            console.error("Ошибка загрузки начального дерева:", error);
+            initializeData();
+            generateFamilyTree();
+          }
+        } else {
+          initializeData();
+          generateFamilyTree();
+        }
+      }
+
+      function showNotification(message, duration = 800) {
+        const notification = document.getElementById("notification");
+        notification.textContent = message;
+        notification.classList.add("show");
+        setTimeout(() => notification.classList.remove("show"), duration);
+      }
+
+      function generateFamilyTree() {
+        const tree = document.getElementById("tree");
+        const treeContainer = document.getElementById("treeContainer");
+        tree.innerHTML = "";
+
+        // Создаем основной контейнер для всего содержимого дерева
+        const treeContent = document.createElement("div");
+        treeContent.style.position = "absolute";
+        treeContent.style.width = "100%";
+        treeContent.style.height = "100%";
+        treeContent.style.transformOrigin = "0 0";
+        treeContent.id = "treeContent";
+
+        // Создаем SVG для линий (он должен быть первым, чтобы быть под иконками)
+        svgContainer = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg",
+        );
+        svgContainer.className = "tree-connections";
+        svgContainer.id = "connections";
+        svgContainer.style.width = "100%";
+        svgContainer.style.height = "100%";
+        svgContainer.style.position = "absolute";
+        svgContainer.style.top = "0";
+        svgContainer.style.left = "0";
+        svgContainer.style.zIndex = "0";
+        svgContainer.style.pointerEvents = "none";
+        svgContainer.style.overflow = "visible";
+        treeContent.appendChild(svgContainer);
+
+        const generationDiv = document.createElement("div");
+        generationDiv.className = "generation";
+        generationDiv.id = "all-generations";
+        generationDiv.style.position = "absolute";
+        generationDiv.style.width = "100%";
+        generationDiv.style.height = "100%";
+        generationDiv.style.zIndex = "1";
+        treeContent.appendChild(generationDiv);
+
+        const pairedPeople = new Set();
+        const pairGroups = [];
+
+        familyMembers.forEach((member) => {
+          if (
+            member.loves &&
+            member.loves.length > 0 &&
+            !pairedPeople.has(member.id)
+          ) {
+            member.loves.forEach((lovedId) => {
+              const lovedPerson = familyMembers.find((m) => m.id === lovedId);
+              if (
+                lovedPerson &&
+                lovedPerson.loves &&
+                lovedPerson.loves.includes(member.id)
+              ) {
+                pairedPeople.add(member.id);
+                pairedPeople.add(lovedId);
+                pairGroups.push([member.id, lovedId]);
+              }
+            });
+          }
+        });
+
+        const generationMembers = {};
+        familyMembers.forEach((member) => {
+          const generation = member.generation || 1;
+          if (!generationMembers[generation])
+            generationMembers[generation] = [];
+          generationMembers[generation].push(member);
+        });
+
+        Object.keys(generationMembers)
+          .sort((a, b) => a - b)
+          .forEach((generation) => {
+            const members = generationMembers[generation];
+            const pairedInThisGeneration = members.filter((m) =>
+              pairedPeople.has(m.id),
+            );
+            const unpairedInThisGeneration = members.filter(
+              (m) => !pairedPeople.has(m.id),
+            );
+
+            let pairXPosition =
+              -(pairedInThisGeneration.length / 2 - 0.5) * 200;
+            pairedInThisGeneration.forEach((member, index) => {
+              const pairMember = pairGroups.find((pair) =>
+                pair.includes(member.id),
+              );
+              if (pairMember) {
+                const partnerId =
+                  pairMember[0] === member.id ? pairMember[1] : pairMember[0];
+                const partner = familyMembers.find((m) => m.id === partnerId);
+
+                if (member.x === undefined || member.y === undefined) {
+                  member.x = pairXPosition - 60;
+                  member.y = (generation - 1) * 300;
+                }
+
+                if (
+                  partner &&
+                  (partner.x === undefined || partner.y === undefined)
+                ) {
+                  partner.x = pairXPosition + 60;
+                  partner.y = (generation - 1) * 300;
+                }
+
+                pairXPosition += 200;
+              }
+            });
+
+            let singleXPosition =
+              -(unpairedInThisGeneration.length / 2 - 0.5) * 300;
+            unpairedInThisGeneration.forEach((member, index) => {
+              if (member.x === undefined || member.y === undefined) {
+                member.x = singleXPosition;
+                member.y = (generation - 1) * 300;
+                singleXPosition += 300;
+              }
+            });
+          });
+
+        familyMembers.forEach((member) => {
+          const personDiv = createPersonElement(member);
+          if (member.x !== undefined && member.y !== undefined) {
+            personDiv.style.left = `${member.x}px`;
+            personDiv.style.top = `${member.y}px`;
+          }
+          generationDiv.appendChild(personDiv);
+        });
+
+        tree.appendChild(treeContent);
+
+        if (!detailsPanel) createDetailsPanel();
+
+        setTimeout(() => {
+          drawConnections();
+          rebindAllEventListeners();
+          updateControlsVisibility();
+        }, 50);
+      }
+
+      function createPersonElement(member) {
+        const personDiv = document.createElement("div");
+        personDiv.className = "person";
+        personDiv.id = `person-${member.id}`;
+        personDiv.dataset.id = member.id;
+
+        if (activePersonId === member.id) {
+          personDiv.classList.add("active");
+        }
+
+        const photoContainer = document.createElement("div");
+        photoContainer.className = "photo-container";
+        photoContainer.style.borderColor = member.photoColor || "#aaaaaa";
+
+        if (member.photo) {
+          const photoImg = document.createElement("img");
+          photoImg.className = "photo";
+          photoImg.src = member.photo;
+          photoImg.setAttribute("draggable", "false"); // Отключаем перетаскивание
+          photoImg.style.pointerEvents = "none"; // Отключаем события мыши
+          photoContainer.appendChild(photoImg);
+        } else {
+          const noPhotoIcon = document.createElement("i");
+          noPhotoIcon.className = "fas fa-user no-photo";
+          photoContainer.appendChild(noPhotoIcon);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "name";
+        nameDiv.innerHTML = `
+    <span class="surname">${member.surname}</span>
+    <span class="firstname">${member.firstname}</span>
+    <span class="middlename">${member.middlename}</span>
+  `;
+
+        personDiv.appendChild(photoContainer);
+        personDiv.appendChild(nameDiv);
+        return personDiv;
+      }
+
+      function createDetailsPanel() {
+        detailsPanel = document.createElement("div");
+        detailsPanel.className = "details-panel";
+        detailsPanel.id = "detailsPanel";
+        document.body.appendChild(detailsPanel);
+      }
+
+      function updateDetailsPanelContent() {
+        if (!detailsPanel) return;
+        const person = activePersonId
+          ? familyMembers.find((m) => m.id === activePersonId)
+          : null;
+        const hasPair = person && person.loves && person.loves.length > 0;
+
+        const heartsSection =
+          editMode && !hasPair
+            ? `
+                        <div class="add-heart-section">
+                            <button class="form-btn save-btn" id="addHeartBtn">
+                                <i class="fas fa-heart"></i> Добавить пару
+                            </button>
+                        </div>
+                    `
+            : "";
+
+        const deleteButton = editMode
+          ? `
+          <div class="add-heart-section">
+                        <button class="form-btn delete-btn" id="deletePersonBtn">
+                            <i class="fas fa-trash"></i> Удалить человека
+                        </button>
+                        </div>
+                    `
+          : "";
+
+        const editProfessionButton = editMode
+          ? '<button class="edit-profession-btn" id="editProfessionBtn">✏️</button>'
+          : "";
+
+        // Добавляем кнопки редактирования фото в режиме редактирования
+        const editPhotoButtons = editMode
+          ? `
+                        <div class="form-buttons">
+                            <button class="form-btn save-btn" id="editIconPhotoBtn">
+                                <i class="fas fa-camera"></i> Изменить фото
+                            </button>
+                        </div>
+                    `
+          : "";
+
+        detailsPanel.innerHTML = `
+                    <div class="details-photo" id="detailsPhoto"><i class="fas fa-user no-photo"></i></div>
+                    <h3 class="details-name" id="detailsName">
+                        <span class="details-surname" id="detailsSurname"></span>
+                        <span class="details-firstname" id="detailsFirstname"></span>
+                        <span class="details-middlename" id="detailsMiddlename"></span>
+                    </h3>
+                    <div class="details-info">
+                        <div class="info-item"><span class="info-label">Дата рождения:</span><span class="info-value" id="detailsBirthDate">Не указано</span></div>
+                        <div class="info-item"><span class="info-label">Место рождения:</span><span class="info-value" id="detailsBirthPlace">Не указано</span></div>
+                        <div class="info-item"><span class="info-label">Профессия:</span><span class="info-value" id="detailsProfession">Не указано</span>${editProfessionButton}</div>
+                        <div class="info-item"><span class="info-label">Пол:</span><span class="info-value" id="detailsGender">Не указано</span></div>
+                    </div>
+                    
+                    <div class="hearts-panel" id="heartsPanel">
+                        <div class="info-label">Пара:</div>
+                        <div class="hearts-list" id="heartsList"></div>
+                        ${heartsSection}
+                    </div>
+                    ${editPhotoButtons}
+                    ${deleteButton}
+                `;
+      }
+
+      function drawConnections() {
+        if (!svgContainer) return;
+
+        // Очищаем SVG
+        while (svgContainer.firstChild) {
+          svgContainer.removeChild(svgContainer.firstChild);
+        }
+
+        // Получаем контейнер дерева
+        const tree = document.getElementById("tree");
+        const treeContent = document.getElementById("treeContent");
+        if (!tree || !treeContent) return;
+
+        // Создаем группу для линий
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        svgContainer.appendChild(g);
+
+        // Рисуем линии любви (пары)
+        familyMembers.forEach((member) => {
+          if (member.loves && member.loves.length > 0) {
+            member.loves.forEach((lovedId) => {
+              const lovedPerson = familyMembers.find((m) => m.id === lovedId);
+              if (
+                lovedPerson &&
+                lovedPerson.loves &&
+                lovedPerson.loves.includes(member.id)
+              ) {
+                const person1 = document.getElementById(`person-${member.id}`);
+                const person2 = document.getElementById(`person-${lovedId}`);
+
+                if (person1 && person2) {
+                  // Получаем абсолютные координаты центров иконок
+                  const person1Rect = person1.getBoundingClientRect();
+                  const person2Rect = person2.getBoundingClientRect();
+
+                  // Центр иконки: left + ширина иконки/2
+                  const person1CenterX =
+                    person1Rect.left + person1Rect.width / 2;
+                  const person1CenterY =
+                    person1Rect.top + person1Rect.height / 2;
+                  const person2CenterX =
+                    person2Rect.left + person2Rect.width / 2;
+                  const person2CenterY =
+                    person2Rect.top + person2Rect.height / 2;
+
+                  // Получаем позицию SVG относительно viewport
+                  const svgRect = svgContainer.getBoundingClientRect();
+
+                  // Преобразуем координаты в пространство SVG
+                  const heartX =
+                    (person1CenterX + person2CenterX) / 2 - svgRect.left;
+                  const heartY =
+                    (person1CenterY + person2CenterY) / 2 - svgRect.top;
+
+                  drawHeart(g, heartX, heartY);
+                }
+              }
+            });
+          }
+        });
+
+        // Рисуем линии родители-дети
+        const parentPairsMap = new Map();
+        familyMembers.forEach((member) => {
+          if (member.parents && member.parents.length >= 2) {
+            const sortedParents = [...member.parents].sort((a, b) => a - b);
+            const key = sortedParents.join("-");
+            if (!parentPairsMap.has(key))
+              parentPairsMap.set(key, { parents: sortedParents, children: [] });
+            parentPairsMap.get(key).children.push(member.id);
+          }
+        });
+
+        parentPairsMap.forEach((pair, key) => {
+          const [parent1Id, parent2Id] = pair.parents;
+          const parent1 = document.getElementById(`person-${parent1Id}`);
+          const parent2 = document.getElementById(`person-${parent2Id}`);
+
+          if (parent1 && parent2) {
+            // Получаем абсолютные координаты
+            const parent1Rect = parent1.getBoundingClientRect();
+            const parent2Rect = parent2.getBoundingClientRect();
+            const svgRect = svgContainer.getBoundingClientRect();
+
+            // Нижний центр иконки родителя
+            const parent1X =
+              parent1Rect.left + parent1Rect.width / 2 - svgRect.left;
+            const parent1Y = parent1Rect.bottom - svgRect.top;
+            const parent2X =
+              parent2Rect.left + parent2Rect.width / 2 - svgRect.left;
+            const parent2Y = parent2Rect.bottom - svgRect.top;
+
+            const connectX = (parent1X + parent2X) / 2;
+            const connectY = Math.max(parent1Y, parent2Y) + 40;
+
+            drawElegantLine(g, parent1X, parent1Y, connectX, connectY, "left");
+            drawElegantLine(g, parent2X, parent2Y, connectX, connectY, "right");
+
+            pair.children.forEach((childId, index) => {
+              const child = document.getElementById(`person-${childId}`);
+              if (child) {
+                const childRect = child.getBoundingClientRect();
+                // Верхний центр иконки ребенка
+                const childX =
+                  childRect.left + childRect.width / 2 - svgRect.left;
+                const childY = childRect.top - svgRect.top;
+
+                drawElegantLine(
+                  g,
+                  connectX,
+                  connectY,
+                  childX,
+                  childY,
+                  "child",
+                  index,
+                  pair.children.length,
+                );
+              }
+            });
+          }
+        });
+
+        // Рисуем линии для одиночных родителей
+        familyMembers.forEach((parent) => {
+          if (parent.children && parent.children.length > 0) {
+            let isPartOfPair = false;
+            parentPairsMap.forEach((pair) => {
+              if (pair.parents.includes(parent.id)) isPartOfPair = true;
+            });
+
+            if (!isPartOfPair) {
+              const parentElement = document.getElementById(
+                `person-${parent.id}`,
+              );
+              if (parentElement) {
+                const parentRect = parentElement.getBoundingClientRect();
+                const svgRect = svgContainer.getBoundingClientRect();
+
+                // Нижний центр иконки родителя
+                const parentX =
+                  parentRect.left + parentRect.width / 2 - svgRect.left;
+                const parentY = parentRect.bottom - svgRect.top;
+
+                parent.children.forEach((childId, index) => {
+                  const child = document.getElementById(`person-${childId}`);
+                  if (child) {
+                    const childRect = child.getBoundingClientRect();
+                    // Верхний центр иконки ребенка
+                    const childX =
+                      childRect.left + childRect.width / 2 - svgRect.left;
+                    const childY = childRect.top - svgRect.top;
+
+                    drawElegantLine(
+                      g,
+                      parentX,
+                      parentY,
+                      childX,
+                      childY,
+                      "single",
+                      index,
+                      parent.children.length,
+                    );
+                  }
+                });
+              }
+            }
+          }
+        });
+      }
+
+      function drawElegantLine(
+        svg,
+        x1,
+        y1,
+        x2,
+        y2,
+        type = "normal",
+        childIndex = 0,
+        totalChildren = 1,
+      ) {
+        const path = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path",
+        );
+        let controlX1, controlY1, controlX2, controlY2;
+        const offset = 30;
+
+        if (type === "left") {
+          controlX1 = x1 - offset;
+          controlY1 = y1 + 60;
+          controlX2 = x2 - 20;
+          controlY2 = y2 - 20;
+        } else if (type === "right") {
+          controlX1 = x1 + offset;
+          controlY1 = y1 + 60;
+          controlX2 = x2 + 20;
+          controlY2 = y2 - 20;
+        } else if (type === "child" || type === "single") {
+          const waveAmplitude = 20;
+          const wavePhase = (childIndex - (totalChildren - 1) / 2) * 0.5;
+          controlX1 = x1 + (x2 - x1) * 0.3 + wavePhase * waveAmplitude;
+          controlY1 = y1 + (y2 - y1) * 0.3 - waveAmplitude;
+          controlX2 = x2 - (x2 - x1) * 0.3 + wavePhase * waveAmplitude;
+          controlY2 = y2 - (y2 - y1) * 0.3 + waveAmplitude;
+        } else {
+          controlX1 = x1 + (x2 - x1) * 0.5;
+          controlY1 = y1 + (y2 - y1) * 0.3;
+          controlX2 = x2 - (x2 - x1) * 0.5;
+          controlY2 = y2 - (y2 - y1) * 0.3;
+        }
+
+        const d = `M ${x1} ${y1} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${x2} ${y2}`;
+        path.setAttribute("d", d);
+        path.classList.add("line-path");
+        svg.appendChild(path);
+      }
+
+      function drawHeart(svg, x, y) {
+        const heartSize = 12;
+        const heart = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path",
+        );
+        const heartPath = `M ${x} ${y - heartSize / 2} C ${x - heartSize} ${y - heartSize}, ${x - heartSize} ${y + heartSize / 2}, ${x} ${y + heartSize} C ${x + heartSize} ${y + heartSize / 2}, ${x + heartSize} ${y - heartSize}, ${x} ${y - heartSize / 2} Z`;
+        heart.setAttribute("d", heartPath);
+        heart.classList.add("heart-symbol");
+        svg.appendChild(heart);
+      }
+
+      function updateControlsVisibility() {
+        const controls = document.getElementById("controls");
+        controls.classList.toggle("visible", editMode);
+      }
+
+      function bindControlButtons() {
+        const saveBtn = document.getElementById("saveBtn");
+        const loadBtn = document.getElementById("loadBtn");
+        const addBtn = document.getElementById("addBtn");
+
+        if (saveBtn) {
+          saveBtn.addEventListener("click", showSaveVersionPanel);
+        }
+        if (loadBtn) {
+          loadBtn.addEventListener("click", showLoadVersionsPanel);
+        }
+        if (addBtn) {
+          addBtn.addEventListener("click", showAddPersonForm);
+        }
+      }
+
+      function addEventListeners() {
+        const treeContainer = document.getElementById("treeContainer");
+        const personElements = document.querySelectorAll(".person");
+
+        personElements.forEach((person) => {
+          const newPerson = person.cloneNode(true);
+          person.parentNode.replaceChild(newPerson, person);
+
+          newPerson.addEventListener("mousedown", function (e) {
+            if (e.button === 0) {
+              isClick = true;
+              clickTimer = setTimeout(() => {
+                isClick = false;
+
+                if (editMode) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const id = parseInt(this.dataset.id);
+                  const member = familyMembers.find((m) => m.id === id);
+                  if (!member) return;
+
+                  isDraggingPerson = true;
+                  draggedPerson = this;
+                  draggedPerson.classList.add("dragging");
+                  treeContainer.classList.add("dragging-person");
+
+                  const rect = this.getBoundingClientRect();
+                  const treeRect = document
+                    .getElementById("treeContainer")
+                    .getBoundingClientRect();
+
+                  const elementLeft = rect.left - treeRect.left;
+                  const elementTop = rect.top - treeRect.top;
+
+                  dragOffsetX = (e.clientX - rect.left) / scale;
+                  dragOffsetY = (e.clientY - rect.top) / scale;
+                }
+              }, 200);
+            }
+          });
+
+          // В обработчике mouseup для person:
+          newPerson.addEventListener("mouseup", function (e) {
+            if (e.button === 0) {
+              clearTimeout(clickTimer);
+
+              if (isClick && !isDraggingPerson) {
+                const id = parseInt(this.dataset.id);
+
+                if (activePersonId === id) {
+                  hidePersonDetails();
+                } else {
+                  showPersonDetails(id);
+                }
+              }
+
+              if (isDraggingPerson) {
+                isClick = false;
+                e.preventDefault();
+                const id = parseInt(draggedPerson.dataset.id);
+                const member = familyMembers.find((m) => m.id === id);
+                if (member) {
+                  // Обновляем координаты в объекте
+                  member.x = parseFloat(draggedPerson.style.left);
+                  member.y = parseFloat(draggedPerson.style.top);
+                  // Перерисовываем линии
+                  setTimeout(() => {
+                    drawConnections();
+                  }, 10);
+                  showNotification(
+                    `Позиция ${member.surname} ${member.firstname} обновлена`,
+                  );
+                }
+                draggedPerson.classList.remove("dragging");
+                isDraggingPerson = false;
+                draggedPerson = null;
+                treeContainer.classList.remove("dragging-person");
+              }
+            }
+          });
+
+          newPerson.addEventListener("mouseenter", function (e) {
+            isMouseOverPerson = true;
+          });
+
+          newPerson.addEventListener("mouseleave", function (e) {
+            isMouseOverPerson = false;
+          });
+        });
+
+        treeContainer.addEventListener("mousedown", function (e) {
+          if (e.button === 0 && !isDraggingPerson && !isMouseOverPerson) {
+            const panel = document.getElementById("detailsPanel");
+            const isClickOnPanel = panel && panel.contains(e.target);
+
+            if (!isClickOnPanel && !isMouseOverPerson) {
+              hidePersonDetails();
+            }
+
+            e.preventDefault();
+            isDragging = true;
+            startX = e.clientX - offsetX;
+            startY = e.clientY - offsetY;
+            treeContainer.classList.add("grabbing");
+          }
+        });
+
+        treeContainer.addEventListener("wheel", function (e) {
+          e.preventDefault();
+
+          // Используем requestIdleCallback если доступен
+          const scheduleUpdate =
+            window.requestIdleCallback || requestAnimationFrame;
+
+          const zoomSpeed = 0.0001;
+          const oldScale = scale;
+          const delta = e.deltaY > 0 ? -1 : 1;
+          scale += delta * zoomSpeed * 100;
+          scale = Math.max(0.1, Math.min(5, scale));
+
+          const visibleRect = treeContainer.getBoundingClientRect();
+          const visibleCenterX = visibleRect.width / 2;
+          const visibleCenterY = visibleRect.height / 2;
+
+          const scaleDiff = scale / oldScale;
+          offsetX = visibleCenterX - (visibleCenterX - offsetX) * scaleDiff;
+          offsetY = visibleCenterY - (visibleCenterY - offsetY) * scaleDiff;
+
+          // Используем оптимизированное обновление
+          scheduleUpdate(() => {
+            updateTreePosition();
+            updatePanelPosition();
+
+            // Перерисовываем линии только при значительном изменении масштаба
+            if (Math.abs(oldScale - scale) > 0.1) {
+              drawConnections();
+            }
+          });
+        });
+
+        document.addEventListener("mousemove", function (e) {
+          if (isDraggingPerson && draggedPerson) {
+            e.preventDefault();
+
+            const treeContainerRect = treeContainer.getBoundingClientRect();
+            const mouseX = e.clientX - treeContainerRect.left;
+            const mouseY = e.clientY - treeContainerRect.top;
+
+            const elementX = (mouseX - offsetX) / scale - dragOffsetX;
+            const elementY = (mouseY - offsetY) / scale - dragOffsetY;
+
+            draggedPerson.style.left = `${elementX}px`;
+            draggedPerson.style.top = `${elementY}px`;
+
+            updatePanelPosition();
+
+            // Перерисовываем линии с небольшой задержкой для производительности
+            if (Date.now() % 3 === 0) {
+              // Перерисовываем каждые 3 кадра
+              requestAnimationFrame(() => {
+                drawConnections();
+              });
+            }
+          } else if (isDragging) {
+            offsetX = e.clientX - startX;
+            offsetY = e.clientY - startY;
+            updateTreePosition(); // Эта функция теперь обновляет и звезды
+            updatePanelPosition();
+          }
+        });
+
+        document.addEventListener("mouseup", function (e) {
+          if (isDragging) {
+            isDragging = false;
+            treeContainer.classList.remove("grabbing");
+          }
+        });
+
+        bindControlButtons();
+
+        window.addEventListener("resize", () => {
+          updateTreePosition();
+          drawConnections();
+          updatePanelPosition();
+        });
+
+        document.addEventListener("keydown", function (e) {
+          if (e.ctrlKey && e.altKey) {
+            e.preventDefault();
+            toggleEditMode();
+          }
+
+          if (e.key === "F5") {
+            e.preventDefault();
+            drawConnections();
+            showNotification("Линии обновлены");
+          }
+
+          if (e.key === "Escape") {
+            e.preventDefault();
+            hidePersonDetails();
+            hideAddHeartPanel();
+            hideSaveVersionPanel();
+            hideLoadVersionsPanel();
+            hideAddPersonForm();
+            hideEditPhotoPanel();
+          }
+          if (
+            e.key === "`" ||
+            e.key === "~" ||
+            e.key === "ё" ||
+            e.key === "Ё" ||
+            e.keyCode === 192 ||
+            e.keyCode === 221
+          ) {
+            e.preventDefault();
+            resetToDefaultZoom();
+          }
+        });
+
+        // Перепривязка глобального обработчика для Ctrl+Alt
+        document.addEventListener("keydown", function (e) {
+          if (e.ctrlKey && e.altKey) {
+            e.preventDefault();
+            toggleEditMode();
+          }
+
+          if (e.key === "F5") {
+            e.preventDefault();
+            drawConnections();
+            showNotification("Линии обновлены");
+          }
+
+          if (e.key === "Escape") {
+            e.preventDefault();
+            hidePersonDetails();
+            hideAddHeartPanel();
+            hideSaveVersionPanel();
+            hideLoadVersionsPanel();
+            hideAddPersonForm();
+            hideEditPhotoPanel();
+          }
+        });
+      }
+
+      function updatePanelPosition() {
+        if (!activePersonId) return;
+
+        const personElement = document.getElementById(
+          `person-${activePersonId}`,
+        );
+        if (!personElement) return;
+
+        const panel = document.getElementById("detailsPanel");
+        if (!panel || !panel.classList.contains("active")) return;
+
+        const personRect = personElement.getBoundingClientRect();
+        const panelWidth = 320;
+        const panelHeight = panel.offsetHeight;
+
+        let panelX = personRect.right + 20;
+        let panelY = personRect.top + (personRect.height - panelHeight) / 2;
+
+        if (panelX + panelWidth > window.innerWidth - 20) {
+          panelX = personRect.left - panelWidth - 20;
+        }
+
+        if (panelY < 20) {
+          panelY = 20;
+        } else if (panelY + panelHeight > window.innerHeight - 20) {
+          panelY = window.innerHeight - panelHeight - 20;
+        }
+
+        if (panelX < 20) {
+          panelX = 20;
+        } else if (panelX + panelWidth > window.innerWidth - 20) {
+          panelX = window.innerWidth - panelWidth - 20;
+        }
+
+        panel.style.left = `${panelX}px`;
+        panel.style.top = `${panelY}px`;
+      }
+
+      function toggleEditMode() {
+        editMode = !editMode;
+        showNotification(
+          editMode
+            ? "Режим редактирования включен"
+            : "Режим редактирования выключен",
+          800,
+        );
+        updateControlsVisibility();
+
+        if (activePersonId) {
+          const panel = document.getElementById("detailsPanel");
+          if (panel && panel.classList.contains("active")) {
+            updateDetailsPanelContent();
+
+            const member = familyMembers.find((m) => m.id === activePersonId);
+            if (member) {
+              document.getElementById("detailsSurname").textContent =
+                member.surname;
+              document.getElementById("detailsFirstname").textContent =
+                member.firstname;
+              document.getElementById("detailsMiddlename").textContent =
+                member.middlename;
+              document.getElementById("detailsBirthDate").textContent =
+                member.birthDate || "Не указано";
+              document.getElementById("detailsBirthPlace").textContent =
+                member.birthPlace || "Не указано";
+              document.getElementById("detailsProfession").textContent =
+                member.profession || "Не указано";
+              document.getElementById("detailsGender").textContent =
+                member.gender === "male"
+                  ? "Мужской"
+                  : member.gender === "female"
+                    ? "Женский"
+                    : "Не указано";
+
+              const detailsPhoto = document.getElementById("detailsPhoto");
+              detailsPhoto.style.borderColor = member.photoColor || "#aaaaaa";
+              detailsPhoto.innerHTML = "";
+
+              // Показываем только фото
+              if (member.photo) {
+                const photoImg = document.createElement("img");
+                photoImg.className = "details-photo-img";
+                photoImg.src = member.photo;
+                photoImg.setAttribute("draggable", "false");
+                photoImg.style.pointerEvents = "none";
+                detailsPhoto.appendChild(photoImg);
+              } else {
+                const noPhotoIcon = document.createElement("i");
+                noPhotoIcon.className = "fas fa-user no-photo";
+                noPhotoIcon.style.fontSize = "70px";
+                noPhotoIcon.style.color = member.photoColor || "#aaaaaa";
+                detailsPhoto.appendChild(noPhotoIcon);
+              }
+
+              updateHeartsList(activePersonId);
+
+              setTimeout(() => {
+                const deleteBtn = document.getElementById("deletePersonBtn");
+                const editProfessionBtn =
+                  document.getElementById("editProfessionBtn");
+                const addHeartBtn = document.getElementById("addHeartBtn");
+                const editIconPhotoBtn =
+                  document.getElementById("editIconPhotoBtn");
+
+                if (deleteBtn) {
+                  deleteBtn.onclick = function (e) {
+                    e.stopPropagation();
+                    if (activePersonId && editMode) {
+                      deletePerson(activePersonId);
+                    } else if (!editMode) {
+                      showNotification(
+                        "Включите режим редактирования (Ctrl+Alt)",
+                      );
+                    }
+                  };
+                }
+
+                if (editProfessionBtn) {
+                  editProfessionBtn.onclick = function (e) {
+                    e.stopPropagation();
+                    if (activePersonId && editMode) {
+                      editProfession(activePersonId);
+                    } else if (!editMode) {
+                      showNotification(
+                        "Включите режим редактирования (Ctrl+Alt)",
+                      );
+                    }
+                  };
+                }
+
+                if (addHeartBtn) {
+                  addHeartBtn.onclick = function (e) {
+                    e.stopPropagation();
+                    if (activePersonId && editMode) {
+                      const person = familyMembers.find(
+                        (m) => m.id === activePersonId,
+                      );
+                      if (person && person.loves && person.loves.length > 0) {
+                        showNotification("У этого человека уже есть пара");
+                      } else {
+                        showAddHeartPanel(activePersonId);
+                      }
+                    } else if (!editMode) {
+                      showNotification(
+                        "Включите режим редактирования (Ctrl+Alt)",
+                      );
+                    }
+                  };
+                }
+
+                // Добавляем обработчики для кнопок редактирования фото
+                if (editIconPhotoBtn) {
+                  editIconPhotoBtn.onclick = function (e) {
+                    e.stopPropagation();
+                    if (activePersonId && editMode) {
+                      editPersonPhoto(activePersonId, "icon");
+                    } else if (!editMode) {
+                      showNotification(
+                        "Включите режим редактирования (Ctrl+Alt)",
+                      );
+                    }
+                  };
+                }
+              }, 10);
+            }
+          }
+        }
+      }
+
+      function updateTreePosition() {
+        const tree = document.getElementById("tree");
+        const treeContent = document.getElementById("treeContent");
+        if (treeContent) {
+          treeContent.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        } else {
+          tree.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        }
+        updateStarfieldPosition();
+      }
+
+      function showPersonDetails(id) {
+        if (activePersonId && activePersonId !== id) {
+          const prevPersonElement = document.getElementById(
+            `person-${activePersonId}`,
+          );
+          if (prevPersonElement) {
+            prevPersonElement.classList.remove("active");
+            const prevPhotoContainer =
+              prevPersonElement.querySelector(".photo-container");
+            if (prevPhotoContainer) {
+              prevPhotoContainer.style.borderColor =
+                "rgba(255, 255, 255, 0.15)";
+              prevPhotoContainer.style.boxShadow = "none";
+            }
+          }
+        }
+
+        const member = familyMembers.find((m) => m.id === id);
+        if (!member) return;
+
+        updateDetailsPanelContent();
+
+        const panel = document.getElementById("detailsPanel");
+
+        document.getElementById("detailsSurname").textContent = member.surname;
+        document.getElementById("detailsFirstname").textContent =
+          member.firstname;
+        document.getElementById("detailsMiddlename").textContent =
+          member.middlename;
+        document.getElementById("detailsBirthDate").textContent =
+          member.birthDate || "Не указано";
+        document.getElementById("detailsBirthPlace").textContent =
+          member.birthPlace || "Не указано";
+        document.getElementById("detailsProfession").textContent =
+          member.profession || "Не указано";
+        document.getElementById("detailsGender").textContent =
+          member.gender === "male"
+            ? "Мужской"
+            : member.gender === "female"
+              ? "Женский"
+              : "Не указано";
+
+        const detailsPhoto = document.getElementById("detailsPhoto");
+        detailsPhoto.style.borderColor = member.photoColor || "#aaaaaa";
+        detailsPhoto.innerHTML = "";
+
+        // Показываем только фото (без GIF)
+        if (member.photo) {
+          const photoImg = document.createElement("img");
+          photoImg.className = "details-photo-img";
+          photoImg.src = member.photo;
+          photoImg.setAttribute("draggable", "false");
+          photoImg.style.pointerEvents = "none";
+          detailsPhoto.appendChild(photoImg);
+        } else {
+          const noPhotoIcon = document.createElement("i");
+          noPhotoIcon.className = "fas fa-user no-photo";
+          noPhotoIcon.style.fontSize = "70px";
+          noPhotoIcon.style.color = member.photoColor || "#aaaaaa";
+          detailsPhoto.appendChild(noPhotoIcon);
+        }
+
+        updateHeartsList(id);
+
+        const personElementCurrent = document.getElementById(`person-${id}`);
+        if (personElementCurrent) {
+          personElementCurrent.classList.add("active");
+          const photoContainer =
+            personElementCurrent.querySelector(".photo-container");
+          if (photoContainer) {
+            photoContainer.style.borderColor = "rgba(255, 255, 255, 0.7)";
+            photoContainer.style.boxShadow =
+              "0 0 20px rgba(255, 255, 255, 0.3)";
+          }
+          positionDetailsPanel(personElementCurrent);
+        }
+
+        panel.classList.add("active");
+        activePersonId = id;
+        isMouseOverPanel = true;
+
+        setTimeout(() => {
+          const deleteBtn = document.getElementById("deletePersonBtn");
+          const editProfessionBtn =
+            document.getElementById("editProfessionBtn");
+          const addHeartBtn = document.getElementById("addHeartBtn");
+          const editIconPhotoBtn = document.getElementById("editIconPhotoBtn");
+
+          if (deleteBtn) {
+            deleteBtn.onclick = function (e) {
+              e.stopPropagation();
+              if (activePersonId && editMode) {
+                deletePerson(activePersonId);
+              } else if (!editMode) {
+                showNotification("Включите режим редактирования (Ctrl+Alt)");
+              }
+            };
+          }
+
+          if (editProfessionBtn) {
+            editProfessionBtn.onclick = function (e) {
+              e.stopPropagation();
+              if (activePersonId && editMode) {
+                editProfession(activePersonId);
+              } else if (!editMode) {
+                showNotification("Включите режим редактирования (Ctrl+Alt)");
+              }
+            };
+          }
+
+          if (addHeartBtn) {
+            addHeartBtn.onclick = function (e) {
+              e.stopPropagation();
+              if (activePersonId && editMode) {
+                const person = familyMembers.find(
+                  (m) => m.id === activePersonId,
+                );
+                if (person && person.loves && person.loves.length > 0) {
+                  showNotification("У этого человека уже есть пара");
+                } else {
+                  showAddHeartPanel(activePersonId);
+                }
+              } else if (!editMode) {
+                showNotification("Включите режим редактирования (Ctrl+Alt)");
+              }
+            };
+          }
+
+          // Добавляем обработчики для кнопок редактирования фото
+          if (editIconPhotoBtn) {
+            editIconPhotoBtn.onclick = function (e) {
+              e.stopPropagation();
+              if (activePersonId && editMode) {
+                editPersonPhoto(activePersonId, "icon");
+              } else if (!editMode) {
+                showNotification("Включите режим редактирования (Ctrl+Alt)");
+              }
+            };
+          }
+        }, 10);
+      }
+
+      function positionDetailsPanel(personElement) {
+        if (!personElement) return;
+
+        const panel = document.getElementById("detailsPanel");
+        const panelWidth = 320;
+        const panelHeight = panel.offsetHeight;
+
+        const personRect = personElement.getBoundingClientRect();
+
+        let panelX = personRect.right + 20;
+        let panelY = personRect.top + (personRect.height - panelHeight) / 2;
+
+        if (panelX + panelWidth > window.innerWidth - 20) {
+          panelX = personRect.left - panelWidth - 20;
+        }
+
+        if (panelY < 20) {
+          panelY = 20;
+        } else if (panelY + panelHeight > window.innerHeight - 20) {
+          panelY = window.innerHeight - panelHeight - 20;
+        }
+
+        if (panelX < 20) {
+          panelX = 20;
+        } else if (panelX + panelWidth > window.innerWidth - 20) {
+          panelX = window.innerWidth - panelWidth - 20;
+        }
+
+        panel.style.left = `${panelX}px`;
+        panel.style.top = `${panelY}px`;
+      }
+
+      function updateHeartsList(personId) {
+        const member = familyMembers.find((m) => m.id === personId);
+        if (!member) return;
+        const heartsList = document.getElementById("heartsList");
+        heartsList.innerHTML = "";
+
+        if (member.loves && member.loves.length > 0) {
+          member.loves.forEach((lovedId) => {
+            const lovedPerson = familyMembers.find((m) => m.id === lovedId);
+            if (lovedPerson) {
+              const heartItem = document.createElement("div");
+              heartItem.className = "heart-item";
+              const heartNames = document.createElement("div");
+              heartNames.className = "heart-names";
+              heartNames.textContent = `${lovedPerson.surname} ${lovedPerson.firstname} ${lovedPerson.middlename}`;
+              if (editMode) {
+                const removeBtn = document.createElement("button");
+                removeBtn.className = "remove-heart-btn";
+                removeBtn.textContent = "Удалить";
+                removeBtn.addEventListener("click", function (e) {
+                  e.stopPropagation();
+                  if (editMode) removeHeart(personId, lovedId);
+                  else
+                    showNotification(
+                      "Включите режим редактирования (Ctrl+Alt)",
+                    );
+                });
+                heartItem.appendChild(heartNames);
+                heartItem.appendChild(removeBtn);
+              } else heartItem.appendChild(heartNames);
+              heartsList.appendChild(heartItem);
+            }
+          });
+        } else {
+          const noHearts = document.createElement("div");
+          noHearts.style.color = "#a0a0a0";
+          noHearts.style.fontStyle = "italic";
+          noHearts.style.padding = "8px";
+          noHearts.textContent = "Нет пары";
+          heartsList.appendChild(noHearts);
+        }
+      }
+
+      function removeHeart(personId, lovedId) {
+        const person = familyMembers.find((m) => m.id === personId);
+        const lovedPerson = familyMembers.find((m) => m.id === lovedId);
+        if (person && lovedPerson) {
+          if (person.loves)
+            person.loves = person.loves.filter((id) => id !== lovedId);
+          if (lovedPerson.loves && lovedPerson.loves.includes(personId))
+            lovedPerson.loves = lovedPerson.loves.filter(
+              (id) => id !== personId,
+            );
+          drawConnections();
+          updateHeartsList(personId);
+          showNotification("Пара удалена");
+        }
+      }
+
+      function showAddHeartPanel(personId) {
+        const person = familyMembers.find((m) => m.id === personId);
+        if (!person) return;
+        if (person.loves && person.loves.length > 0) {
+          showNotification("У этого человека уже есть пара");
+          return;
+        }
+
+        const availablePeople = familyMembers.filter(
+          (m) =>
+            m.id !== personId &&
+            m.gender !== person.gender &&
+            m.generation === person.generation &&
+            (!m.loves || m.loves.length === 0),
+        );
+
+        if (availablePeople.length === 0) {
+          showNotification("Нет доступных людей для создания пары");
+          return;
+        }
+
+        let addHeartPanel = document.getElementById("addHeartPanel");
+        if (!addHeartPanel) {
+          addHeartPanel = document.createElement("div");
+          addHeartPanel.className = "edit-panel";
+          addHeartPanel.id = "addHeartPanel";
+          document.body.appendChild(addHeartPanel);
+        }
+
+        const options = availablePeople
+          .map(
+            (member) =>
+              `<option value="${member.id}">${member.surname} ${member.firstname} ${member.middlename}</option>`,
+          )
+          .join("");
+        addHeartPanel.innerHTML = `
+                <h3 style="margin-bottom: 20px; color: #fff;">Добавить пару</h3>
+                <div style="color: #fff; margin-bottom: 15px;">Кого любит <strong>${person.surname} ${person.firstname} ${person.middlename}</strong>?</div>
+                <form class="edit-form" id="addHeartForm">
+                    <div class="form-group">
+                        <label class="form-label">Выберите человека:</label>
+                        <select class="form-input" id="heartPersonSelect" required><option value="">Выберите человека</option>${options}</select>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="form-btn save-btn">Добавить пару</button>
+                        <button type="button" class="form-btn cancel-btn" id="cancelAddHeartBtn">Отмена</button>
+                    </div>
+                </form>
+            `;
+
+        addHeartPanel.style.left = "50%";
+        addHeartPanel.style.top = "50%";
+        addHeartPanel.style.transform = "translate(-50%, -50%) scale(0.9)";
+        addHeartPanel.classList.add("active");
+
+        document
+          .getElementById("addHeartForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            const lovedId = parseInt(
+              document.getElementById("heartPersonSelect").value,
+            );
+            if (lovedId) {
+              const lovedPerson = familyMembers.find((m) => m.id === lovedId);
+              if (
+                lovedPerson &&
+                lovedPerson.loves &&
+                lovedPerson.loves.length > 0
+              ) {
+                showNotification("У выбранного человека уже есть пара");
+                return;
+              }
+              addHeart(personId, lovedId, true);
+              hideAddHeartPanel();
+            }
+          });
+        document
+          .getElementById("cancelAddHeartBtn")
+          .addEventListener("click", hideAddHeartPanel);
+      }
+
+      function hideAddHeartPanel() {
+        const addHeartPanel = document.getElementById("addHeartPanel");
+        if (addHeartPanel) addHeartPanel.classList.remove("active");
+      }
+
+      function addHeart(personId, lovedId, isMutual = false) {
+        const person = familyMembers.find((m) => m.id === personId);
+        const lovedPerson = familyMembers.find((m) => m.id === lovedId);
+        if (person && lovedPerson) {
+          if (
+            (person.loves && person.loves.length > 0) ||
+            (lovedPerson.loves && lovedPerson.loves.length > 0)
+          ) {
+            showNotification("У одного из людей уже есть пара");
+            return;
+          }
+          if (!person.loves) person.loves = [];
+          person.loves.push(lovedId);
+          if (isMutual) {
+            if (!lovedPerson.loves) lovedPerson.loves = [];
+            lovedPerson.loves.push(personId);
+          }
+          if (person.x !== undefined && lovedPerson.x !== undefined) {
+            const midX = (person.x + lovedPerson.x) / 2;
+            const midY = (person.y + lovedPerson.y) / 2;
+            person.x = midX - 60;
+            lovedPerson.x = midX + 60;
+            person.y = midY;
+            lovedPerson.y = midY;
+          }
+          generateFamilyTree();
+          updateHeartsList(personId);
+          showNotification("Пара добавлена");
+        }
+      }
+
+      function hidePersonDetails() {
+        const panel = document.getElementById("detailsPanel");
+        panel.classList.remove("active");
+
+        if (activePersonId) {
+          const personElement = document.getElementById(
+            `person-${activePersonId}`,
+          );
+          if (personElement) {
+            personElement.classList.remove("active");
+            const photoContainer =
+              personElement.querySelector(".photo-container");
+            if (photoContainer) {
+              photoContainer.style.borderColor = "rgba(255, 255, 255, 0.55)";
+              photoContainer.style.boxShadow = "none";
+            }
+          }
+        }
+
+        activePersonId = null;
+        isMouseOverPanel = false;
+      }
+
+      function editProfession(personId) {
+        const member = familyMembers.find((m) => m.id === personId);
+        if (!member) return;
+        const newProfession = prompt(
+          "Введите новую профессию:",
+          member.profession || "",
+        );
+        if (newProfession !== null) {
+          member.profession = newProfession;
+          showPersonDetails(personId);
+          generateFamilyTree();
+          showNotification("Профессия обновлена");
+        }
+      }
+
+      // Функция для редактирования фото
+      function editPersonPhoto(personId, photoType) {
+        const member = familyMembers.find((m) => m.id === personId);
+        if (!member) return;
+
+        // Создаем панель для загрузки фото
+        const editPhotoPanel = document.createElement("div");
+        editPhotoPanel.className = "edit-panel";
+        editPhotoPanel.id = "editPhotoPanel";
+        editPhotoPanel.innerHTML = `
+            <h3 style="margin-bottom: 20px; color: #fff;">
+               Изменить фото
+            </h3>
+            <div style="color: #fff; margin-bottom: 15px;">
+                Для: <strong>${member.surname} ${member.firstname} ${member.middlename}</strong>
+            </div>
+            <div class="file-input-container">
+                <label class="file-input-label">
+                    <i class="fas fa-image"></i> Выбрать фото
+                    <input type="file" class="file-input" id="newPhotoInput" accept="image/*">
+                </label>
+            </div>
+            <div id="photoPreview" style="margin-top: 15px;"></div>
+            <div style="font-size: 12px; color: #a0a0a0; margin-top: 10px;">
+               Рекомендуемый размер: 900×1200px (будет автоматически масштабировано)
+            </div>
+            <div class="form-buttons" style="margin-top: 20px;">
+                <button type="button" class="form-btn save-btn" id="savePhotoBtn">Сохранить</button>
+                <button type="button" class="form-btn cancel-btn" id="cancelPhotoBtn">Отмена</button>
+                ${
+                  member.photo
+                    ? `<button type="button" class="form-btn delete-btn" id="removePhotoBtn">Удалить фото</button>`
+                    : ""
+                }
+            </div>
+        `;
+
+        document.body.appendChild(editPhotoPanel);
+
+        editPhotoPanel.style.left = "50%";
+        editPhotoPanel.style.top = "50%";
+        editPhotoPanel.style.transform = "translate(-50%, -50%) scale(0.9)";
+
+        setTimeout(() => {
+          editPhotoPanel.classList.add("active");
+        }, 10);
+
+        let compressedPhotoData = null;
+
+        // Обработчик выбора файла
+        document
+          .getElementById("newPhotoInput")
+          .addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const previewDiv = document.getElementById("photoPreview");
+            previewDiv.innerHTML =
+              '<div style="color: #a0a0a0; font-size: 12px; padding: 10px;">Обработка изображения...</div>';
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const img = new Image();
+              img.onload = function () {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+
+                // Размеры в зависимости от типа фото
+                const targetWidth = photoType === "icon" ? 900 : 1800;
+                const targetHeight = photoType === "icon" ? 1200 : 2400;
+
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                // Белый фон
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+                // Масштабирование с сохранением пропорций
+                const imgRatio = img.width / img.height;
+                const targetRatio = targetWidth / targetHeight;
+
+                let drawWidth, drawHeight, offsetX, offsetY;
+
+                if (imgRatio > targetRatio) {
+                  drawHeight = targetHeight;
+                  drawWidth = targetHeight * imgRatio;
+                  offsetX = (targetWidth - drawWidth) / 2;
+                  offsetY = 0;
+                } else {
+                  drawWidth = targetWidth;
+                  drawHeight = targetWidth / imgRatio;
+                  offsetX = 0;
+                  offsetY = (targetHeight - drawHeight) / 2;
+                }
+
+                ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+
+                // Сохраняем сжатое изображение
+                compressedPhotoData = canvas.toDataURL("image/jpeg", 0.7);
+
+                // Показываем превью
+                previewDiv.innerHTML = "";
+                const previewImg = document.createElement("img");
+                previewImg.src = compressedPhotoData;
+                previewImg.style.maxWidth = "150px";
+                previewImg.style.maxHeight = "150px";
+                previewImg.style.borderRadius = "4px";
+                previewImg.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+                previewImg.setAttribute("draggable", "false");
+                previewImg.style.pointerEvents = "none";
+                previewDiv.appendChild(previewImg);
+              };
+              img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          });
+
+        // Обработчик сохранения
+        document
+          .getElementById("savePhotoBtn")
+          .addEventListener("click", function () {
+            if (compressedPhotoData) {
+              // Обновляем фото (одно фото для обоих мест)
+              member.photo = compressedPhotoData;
+
+              // Обновляем отображение
+              generateFamilyTree();
+              if (activePersonId === personId) {
+                showPersonDetails(personId);
+              }
+
+              showNotification("Фото обновлено");
+              hideEditPhotoPanel();
+            } else {
+              showNotification("Выберите новое фото");
+            }
+          });
+
+        // Обработчик удаления фото
+        const removePhotoBtn = document.getElementById("removePhotoBtn");
+        if (removePhotoBtn) {
+          removePhotoBtn.addEventListener("click", function () {
+            // Удаляем фото
+            member.photo = null;
+
+            // Обновляем отображение
+            generateFamilyTree();
+            if (activePersonId === personId) {
+              showPersonDetails(personId);
+            }
+
+            showNotification("Фото удалено");
+            hideEditPhotoPanel();
+          });
+        }
+
+        // Обработчик отмены
+        document
+          .getElementById("cancelPhotoBtn")
+          .addEventListener("click", hideEditPhotoPanel);
+
+        function hideEditPhotoPanel() {
+          editPhotoPanel.classList.remove("active");
+          setTimeout(() => {
+            if (editPhotoPanel.parentNode) {
+              editPhotoPanel.parentNode.removeChild(editPhotoPanel);
+            }
+          }, 200);
+        }
+      }
+
+      function hideEditPhotoPanel() {
+        const editPhotoPanel = document.getElementById("editPhotoPanel");
+        if (editPhotoPanel) {
+          editPhotoPanel.classList.remove("active");
+          setTimeout(() => {
+            if (editPhotoPanel.parentNode) {
+              editPhotoPanel.parentNode.removeChild(editPhotoPanel);
+            }
+          }, 200);
+        }
+      }
+
+      function deletePerson(id) {
+        const member = familyMembers.find((m) => m.id === id);
+        if (!member) return;
+        familyMembers.forEach((m) => {
+          if (m.loves && m.loves.includes(id))
+            m.loves = m.loves.filter((lovedId) => lovedId !== id);
+          if (m.parents && m.parents.includes(id))
+            m.parents = m.parents.filter((parentId) => parentId !== id);
+          if (m.children && m.children.includes(id))
+            m.children = m.children.filter((childId) => childId !== id);
+          if (m.spouse === id) m.spouse = null;
+        });
+        familyMembers = familyMembers.filter((m) => m.id !== id);
+        hidePersonDetails();
+        generateFamilyTree();
+        showNotification(
+          `Удален: ${member.surname} ${member.firstname} ${member.middlename}`,
+        );
+      }
+
+      function showSaveVersionPanel() {
+        let savePanel = document.getElementById("saveVersionPanel");
+        if (!savePanel) {
+          savePanel = document.createElement("div");
+          savePanel.className = "save-version-panel";
+          savePanel.id = "saveVersionPanel";
+          savePanel.innerHTML = `
+      <h3 style="margin-bottom: 20px; color: #fff;">Сохранение файла</h3>
+      <form class="edit-form" id="saveVersionForm">
+        <div class="form-group">
+          <label class="form-label">Название файла:</label>
+          <input type="text" class="form-input" id="versionName" placeholder="family_tree" required>
+        </div>
+        <div class="form-group">
+          <div style="color: #a0a0a0; font-size: 14px; margin-top: 10px;">
+            Информация для сохранения:<br>
+            • Людей: ${familyMembers.length}<br>
+            • Поколений: ${maxGeneration}<br>
+            • Дата: ${new Date().toLocaleString()}
+          </div>
+        </div>
+        <div class="form-buttons">
+          <button type="submit" class="form-btn save-btn">Сохранить в файл</button>
+          <button type="button" class="form-btn cancel-btn" id="cancelSaveBtn">Отмена</button>
+        </div>
+      </form>
+    `;
+          document.body.appendChild(savePanel);
+          document
+            .getElementById("saveVersionForm")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+              const versionName = document
+                .getElementById("versionName")
+                .value.trim();
+              if (versionName) {
+                saveToFile(versionName);
+                hideSaveVersionPanel();
+              }
+            });
+          document
+            .getElementById("cancelSaveBtn")
+            .addEventListener("click", hideSaveVersionPanel);
+        }
+        savePanel.style.left = "50%";
+        savePanel.style.top = "50%";
+        savePanel.style.transform = "translate(-50%, -50%) scale(0.9)";
+        savePanel.classList.add("active");
+        document.getElementById("versionName").value =
+          `FamilyTree_${new Date().toLocaleDateString("ru-RU").replace(/\./g, "-")}`;
+      }
+
+      function hideSaveVersionPanel() {
+        const savePanel = document.getElementById("saveVersionPanel");
+        if (savePanel) savePanel.classList.remove("active");
+      }
+
+      function saveToFile(versionName) {
+        const dataToSave = {
+          date: new Date().toISOString(),
+          membersCount: familyMembers.length,
+          maxGeneration: maxGeneration,
+          nextId: nextId,
+          members: familyMembers.map((member) => {
+            const compressedMember = { ...member };
+            delete compressedMember.compressedPhoto;
+            delete compressedMember.compressedGif;
+            return compressedMember;
+          }),
+        };
+
+        const dataStr = JSON.stringify(dataToSave, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+        const fileName = `${versionName}.json`;
+
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showNotification(`Файл "${versionName}.json" сохранен`);
+      }
+
+      function showLoadVersionsPanel() {
+        let loadPanel = document.getElementById("loadVersionsPanel");
+        if (!loadPanel) {
+          loadPanel = document.createElement("div");
+          loadPanel.className = "load-version-panel";
+          loadPanel.id = "loadVersionsPanel";
+          loadPanel.innerHTML = `
+                    <h3 style="margin-bottom: 20px; color: #fff;">Загрузка версии</h3>
+                    <div class="file-input-container">
+                        <label class="file-input-label"><i class="fas fa-file-import"></i> Выберите файл для загрузки<input type="file" class="file-input" id="fileInput" accept=".json"></label>
+                    </div>
+                    <div style="color: #a0a0a0; font-size: 14px; margin-top: 15px;">Выберите файл в формате JSON, ранее сохраненный через "Сохранить в файл"</div>
+                    <div class="form-buttons" style="margin-top: 20px;"><button type="button" class="form-btn cancel-btn" id="cancelLoadBtn" style="flex: 1;">Закрыть</button></div>
+                `;
+          document.body.appendChild(loadPanel);
+          document
+            .getElementById("fileInput")
+            .addEventListener("change", function (e) {
+              const file = e.target.files[0];
+              if (file) loadFromFile(file);
+            });
+          document
+            .getElementById("cancelLoadBtn")
+            .addEventListener("click", hideLoadVersionsPanel);
+        }
+        loadPanel.style.left = "50%";
+        loadPanel.style.top = "50%";
+        loadPanel.style.transform = "translate(-50%, -50%) scale(0.9)";
+        loadPanel.classList.add("active");
+        document.getElementById("fileInput").value = "";
+      }
+
+      function hideLoadVersionsPanel() {
+        const loadPanel = document.getElementById("loadVersionsPanel");
+        if (loadPanel) loadPanel.classList.remove("active");
+      }
+
+      function loadFromFile(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (!data.members || !Array.isArray(data.members))
+              throw new Error("Неверный формат файла");
+
+            familyMembers = data.members;
+            nextId =
+              data.nextId || Math.max(...familyMembers.map((m) => m.id)) + 1;
+            maxGeneration =
+              data.maxGeneration ||
+              Math.max(...familyMembers.map((m) => m.generation));
+
+            generateFamilyTree();
+
+            setTimeout(() => {
+              addEventListeners();
+              updateControlsVisibility();
+            }, 100);
+
+            hideLoadVersionsPanel();
+
+            const fileName = file.name.replace(".json", "");
+            showNotification(`Загружен файл: "${fileName}"`);
+
+            // editMode = false;
+            // updateControlsVisibility();
+
+            if (activePersonId) {
+              hidePersonDetails();
+            }
+          } catch (error) {
+            console.error("Ошибка загрузки файла:", error);
+            showNotification("Ошибка загрузки файла. Проверьте формат файла.");
+          }
+        };
+        reader.onerror = function () {
+          showNotification("Ошибка чтения файла");
+        };
+        reader.readAsText(file);
+      }
+
+      function getPaginatedItems(items, page, itemsPerPage) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        return {
+          items: items.slice(start, end),
+          totalPages: Math.ceil(items.length / itemsPerPage),
+          currentPage: page,
+        };
+      }
+
+      function updateParentsLists(generation) {
+        const maleParentsList = document.getElementById("maleParentsList");
+        const femaleParentsList = document.getElementById("femaleParentsList");
+        if (!maleParentsList || !femaleParentsList) return;
+
+        const maleParents = familyMembers.filter(
+          (m) => m.gender === "male" && m.generation === generation - 1,
+        );
+        const femaleParents = familyMembers.filter(
+          (m) => m.gender === "female" && m.generation === generation - 1,
+        );
+
+        const malePaginated = getPaginatedItems(
+          maleParents,
+          parentsPage.male,
+          ITEMS_PER_PAGE,
+        );
+        const femalePaginated = getPaginatedItems(
+          femaleParents,
+          parentsPage.female,
+          ITEMS_PER_PAGE,
+        );
+
+        maleParentsList.innerHTML = "";
+        femaleParentsList.innerHTML = "";
+
+        malePaginated.items.forEach((parent) => {
+          const checkbox = document.createElement("div");
+          checkbox.className = "parent-checkbox";
+          checkbox.innerHTML = `
+      <label>
+        <input type="radio" name="maleParent" value="${parent.id}" class="parent-checkbox-input" 
+               ${document.querySelector('input[name="maleParent"]:checked')?.value == parent.id ? "checked" : ""}>
+        <span class="parent-name">${parent.surname} ${parent.firstname} ${parent.middlename}</span>
+      </label>
+    `;
+          maleParentsList.appendChild(checkbox);
+        });
+
+        femalePaginated.items.forEach((parent) => {
+          const checkbox = document.createElement("div");
+          checkbox.className = "parent-checkbox";
+          checkbox.innerHTML = `
+      <label>
+        <input type="radio" name="femaleParent" value="${parent.id}" class="parent-checkbox-input"
+               ${document.querySelector('input[name="femaleParent"]:checked')?.value == parent.id ? "checked" : ""}>
+        <span class="parent-name">${parent.surname} ${parent.firstname} ${parent.middlename}</span>
+      </label>
+    `;
+          femaleParentsList.appendChild(checkbox);
+        });
+
+        const malePagination = maleParentsList.parentElement.querySelector(
+          ".pagination-controls",
+        );
+        if (malePagination) malePagination.remove();
+
+        if (malePaginated.totalPages > 1) {
+          const paginationDiv = document.createElement("div");
+          paginationDiv.className = "pagination-controls";
+          paginationDiv.innerHTML = `
+          <button class="page-btn" id="malePrevBtn" ${parentsPage.male <= 1 ? "disabled" : ""}>←</button>
+          <span class="page-info">${parentsPage.male}/${malePaginated.totalPages}</span>
+          <button class="page-btn" id="maleNextBtn" ${parentsPage.male >= malePaginated.totalPages ? "disabled" : ""}>→</button>
+        `;
+          maleParentsList.parentElement.appendChild(paginationDiv);
+
+          document
+            .getElementById("malePrevBtn")
+            .addEventListener("click", () => {
+              if (parentsPage.male > 1) {
+                parentsPage.male--;
+                updateParentsLists(generation);
+              }
+            });
+          document
+            .getElementById("maleNextBtn")
+            .addEventListener("click", () => {
+              if (parentsPage.male < malePaginated.totalPages) {
+                parentsPage.male++;
+                updateParentsLists(generation);
+              }
+            });
+        }
+
+        const femalePagination = femaleParentsList.parentElement.querySelector(
+          ".pagination-controls",
+        );
+        if (femalePagination) femalePagination.remove();
+
+        if (femalePaginated.totalPages > 1) {
+          const paginationDiv = document.createElement("div");
+          paginationDiv.className = "pagination-controls";
+          paginationDiv.innerHTML = `
+          <button class="page-btn" id="femalePrevBtn" ${parentsPage.female <= 1 ? "disabled" : ""}>←</button>
+          <span class="page-info">${parentsPage.female}/${femalePaginated.totalPages}</span>
+          <button class="page-btn" id="femaleNextBtn" ${parentsPage.female >= femalePaginated.totalPages ? "disabled" : ""}>→</button>
+        `;
+          femaleParentsList.parentElement.appendChild(paginationDiv);
+
+          document
+            .getElementById("femalePrevBtn")
+            .addEventListener("click", () => {
+              if (parentsPage.female > 1) {
+                parentsPage.female--;
+                updateParentsLists(generation);
+              }
+            });
+
+          document
+            .getElementById("femaleNextBtn")
+            .addEventListener("click", () => {
+              if (parentsPage.female < femalePaginated.totalPages) {
+                parentsPage.female++;
+                updateParentsLists(generation);
+              }
+            });
+        }
+      }
+
+      function updateChildrenList(generation) {
+        const childrenList = document.getElementById("childrenList");
+        if (!childrenList) return;
+
+        const availableChildren = familyMembers.filter(
+          (m) => m.generation === generation + 1,
+        );
+        const childrenPaginated = getPaginatedItems(
+          availableChildren,
+          childrenPage,
+          ITEMS_PER_PAGE,
+        );
+
+        childrenList.innerHTML = "";
+
+        childrenPaginated.items.forEach((child) => {
+          const checkbox = document.createElement("div");
+          checkbox.className = "parent-checkbox";
+          checkbox.innerHTML = `
+      <label>
+        <input type="checkbox" value="${child.id}" class="parent-checkbox-input children-checkbox">
+        <span class="parent-name">${child.surname} ${child.firstname} ${child.middlename}</span>
+      </label>
+    `;
+          childrenList.appendChild(checkbox);
+        });
+
+        const paginationDiv = childrenList.parentElement.querySelector(
+          ".pagination-controls",
+        );
+        if (paginationDiv) paginationDiv.remove();
+
+        if (childrenPaginated.totalPages > 1) {
+          const paginationDiv = document.createElement("div");
+          paginationDiv.className = "pagination-controls";
+          paginationDiv.innerHTML = `
+          <button class="page-btn" id="childrenPrevBtn" ${childrenPage <= 1 ? "disabled" : ""}>←</button>
+          <span class="page-info">${childrenPage}/${childrenPaginated.totalPages}</span>
+          <button class="page-btn" id="childrenNextBtn" ${childrenPage >= childrenPaginated.totalPages ? "disabled" : ""}>→</button>
+        `;
+          childrenList.parentElement.appendChild(paginationDiv);
+
+          document
+            .getElementById("childrenPrevBtn")
+            .addEventListener("click", () => {
+              if (childrenPage > 1) {
+                childrenPage--;
+                updateChildrenList(generation);
+              }
+            });
+
+          document
+            .getElementById("childrenNextBtn")
+            .addEventListener("click", () => {
+              if (childrenPage < childrenPaginated.totalPages) {
+                childrenPage++;
+                updateChildrenList(generation);
+              }
+            });
+        }
+      }
+
+      function showAddPersonForm() {
+        hideAddHeartPanel();
+        hideSaveVersionPanel();
+        hideLoadVersionsPanel();
+        hideEditPhotoPanel();
+
+        const existingPanel = document.getElementById("editPanel");
+        if (existingPanel) {
+          existingPanel.parentNode.removeChild(existingPanel);
+        }
+
+        const editPanel = document.createElement("div");
+        editPanel.className = "edit-panel";
+        editPanel.id = "editPanel";
+
+        editPanel.innerHTML = `
+        <h3 style="margin-bottom: 20px; color: #fff;">Добавить нового члена семьи</h3>
+        <form class="edit-form" id="addPersonForm">
+          <div class="form-group"><label class="form-label">Фамилия:</label><input type="text" class="form-input" id="addSurname" required></div>
+          <div class="form-group"><label class="form-label">Имя:</label><input type="text" class="form-input" id="addFirstname" required></div>
+          <div class="form-group"><label class="form-label">Отчество:</label><input type="text" class="form-input" id="addMiddlename"></div>
+          
+          <div class="form-group">
+            <label class="form-label">Дата рождения:</label>
+            <div style="display: flex; gap: 10px; align-items: stretch;">
+              <input type="text" class="form-input" id="addBirthDay" placeholder="День" style="width: 70px;">
+              <select class="form-input" id="addBirthMonth" style="width: 120px; appearance: none;">
+                <option value="">Месяц</option>
+                <option value="01">Январь</option><option value="02">Февраль</option>
+                <option value="03">Март</option><option value="04">Апрель</option>
+                <option value="05">Май</option><option value="06">Июнь</option>
+                <option value="07">Июль</option><option value="08">Август</option>
+                <option value="09">Сентябрь</option><option value="10">Октябрь</option>
+                <option value="11">Ноябрь</option><option value="12">Декабрь</option>
+              </select>
+              <input type="text" class="form-input" id="addBirthYear" placeholder="Год" style="width: 90px;">
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Место рождения:</label><input type="text" class="form-input" id="addBirthPlace"></div>
+          <div class="form-group"><label class="form-label">Профессия:</label><input type="text" class="form-input" id="addProfession"></div>
+          <div class="form-group"><label class="form-label">Пол:</label><select style="appearance: none;" class="form-input" id="addGender" required><option value="male">Мужской</option><option value="female">Женский</option></select></div>
+          <div class="form-group"><label class="form-label">Поколение:</label>
+            <select class="form-input" id="addGeneration" style="flex: 1; appearance: none;">
+              ${Array.from({ length: maxGeneration + 1 }, (_, i) => `<option value="${i}">${i}</option>`).join("")}
+              <option value="${maxGeneration + 1}" selected>${maxGeneration + 1} (новое)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Фотография:</label>
+            <div class="file-input-container">
+              <label class="file-input-label">
+                <i class="fas fa-image"></i> Выбрать фото
+                <input type="file" class="file-input" id="addPhoto" accept="image/*">
+              </label>
+              <div id="addPhotoPreview" style="margin-top: 10px;"></div>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Родители:</label>
+            <div class="parents-selection" id="parentsSelection">
+              <div class="parents-columns">
+                <div class="parents-column">
+                  <div class="parents-column-title">Мужчины (поколение ${maxGeneration - 1 > 0 ? maxGeneration - 1 : 0})</div>
+                  <div class="parents-list" id="maleParentsList"></div>
+                </div>
+                <div class="parents-column">
+                  <div class="parents-column-title">Женщины (поколение ${maxGeneration - 1 > 0 ? maxGeneration - 1 : 0})</div>
+                  <div class="parents-list" id="femaleParentsList"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Дети:</label>
+            <div class="children-selection" id="childrenSelection">
+              <div class="children-list" id="childrenList"></div>
+            </div>
+          </div>
+          <div class="form-buttons">
+            <button type="submit" class="form-btn save-btn">Добавить</button>
+            <button type="button" class="form-btn cancel-btn" id="cancelAddBtn">Отмена</button>
+          </div>
+        </form>
+      `;
+
+        document.body.appendChild(editPanel);
+
+        editPanel.style.left = "50%";
+        editPanel.style.top = "50%";
+        editPanel.style.transform = "translate(-50%, -50%) scale(0.9)";
+
+        const dayInput = document.getElementById("addBirthDay");
+        const yearInput = document.getElementById("addBirthYear");
+
+        [dayInput, yearInput].forEach((input) => {
+          input.addEventListener("input", function (e) {
+            // Удаляем все нецифровые символы
+            this.value = this.value.replace(/\D/g, "");
+          });
+        });
+
+        setTimeout(() => {
+          editPanel.classList.add("active");
+        }, 10);
+
+        const generationSelect = document.getElementById("addGeneration");
+        const currentGeneration = parseInt(generationSelect.value);
+
+        updateParentsLists(currentGeneration);
+        updateChildrenList(currentGeneration);
+        // РАЗМЕР ФАЙЛА
+        document
+          .getElementById("addPhoto")
+          .addEventListener("change", (e) =>
+            handleImagePreviewWithCompression(e, "addPhotoPreview", 900, 1200),
+          );
+
+        const addPersonForm = document.getElementById("addPersonForm");
+        addPersonForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          addNewPerson();
+          hideAddPersonForm();
+        });
+
+        document
+          .getElementById("cancelAddBtn")
+          .addEventListener("click", hideAddPersonForm);
+
+        generationSelect.addEventListener("change", updateGenerationLists);
+      }
+
+      function updateGenerationLists() {
+        const generationSelect = document.getElementById("addGeneration");
+        const currentGeneration = parseInt(generationSelect.value);
+
+        const maleTitle = document.querySelector(
+          "#parentsSelection .parents-columns .parents-column:first-child .parents-column-title",
+        );
+        const femaleTitle = document.querySelector(
+          "#parentsSelection .parents-columns .parents-column:last-child .parents-column-title",
+        );
+
+        if (maleTitle && femaleTitle) {
+          const parentGeneration =
+            currentGeneration - 1 > 0 ? currentGeneration - 1 : 0;
+          maleTitle.textContent = `Мужчины (поколение ${parentGeneration})`;
+          femaleTitle.textContent = `Женщины (поколение ${parentGeneration})`;
+        }
+
+        updateParentsLists(currentGeneration);
+        updateChildrenList(currentGeneration);
+      }
+
+      function handleImagePreviewWithCompression(
+        event,
+        previewId,
+        maxWidth,
+        maxHeight,
+      ) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const previewDiv = document.getElementById(previewId);
+        previewDiv.innerHTML =
+          '<div style="color: #a0a0a0; font-size: 12px; padding: 10px;">Сжатие изображения...</div>';
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function () {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth || height > maxHeight) {
+              const ratio = Math.min(maxWidth / width, maxHeight / height);
+              width = Math.floor(width * ratio);
+              height = Math.floor(height * ratio);
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.drawImage(img, 0, 0, width, height);
+
+            let quality = 0.7;
+
+            if (file.size > 5 * 1024 * 1024) {
+              quality = 0.5;
+            } else if (file.size > 2 * 1024 * 1024) {
+              quality = 0.6;
+            } else if (file.size > 1 * 1024 * 1024) {
+              quality = 0.65;
+            }
+
+            let compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+
+            const base64Length =
+              compressedDataUrl.length - (compressedDataUrl.indexOf(",") + 1);
+            const padding =
+              compressedDataUrl.charAt(compressedDataUrl.length - 2) === "="
+                ? 2
+                : 1;
+            const fileSize = Math.floor(base64Length * 0.75) - padding;
+
+            if (fileSize > 500 * 1024) {
+              quality = Math.max(0.3, quality - 0.1);
+              compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+            }
+
+            if (fileSize > 300 * 1024) {
+              width = Math.floor(width * 0.8);
+              height = Math.floor(height * 0.8);
+              canvas.width = width;
+              canvas.height = height;
+              ctx.fillStyle = "white";
+              ctx.fillRect(0, 0, width, height);
+              ctx.drawImage(img, 0, 0, width, height);
+              compressedDataUrl = canvas.toDataURL("image/jpeg", 0.4);
+            }
+
+            previewDiv.innerHTML = "";
+            const previewImg = document.createElement("img");
+            previewImg.src = compressedDataUrl;
+            previewImg.style.maxWidth = "100px";
+            previewImg.style.maxHeight = "100px";
+            previewImg.style.borderRadius = "4px";
+            previewImg.style.marginTop = "5px";
+            previewImg.setAttribute("draggable", "false");
+            previewImg.style.pointerEvents = "none";
+
+            const infoDiv = document.createElement("div");
+            infoDiv.style.fontSize = "11px";
+            infoDiv.style.color = "#a0a0a0";
+            infoDiv.style.marginTop = "5px";
+            infoDiv.innerHTML = `Сжато до: ${width}×${height}px`;
+
+            previewDiv.appendChild(previewImg);
+            previewDiv.appendChild(infoDiv);
+
+            const fileInput = event.target;
+            fileInput.dataset.compressedImage = compressedDataUrl;
+          };
+
+          img.onerror = function () {
+            previewDiv.innerHTML =
+              '<div style="color: #ff6b6b; font-size: 12px; padding: 10px;">Ошибка загрузки изображения</div>';
+          };
+
+          img.src = e.target.result;
+        };
+
+        reader.onerror = function () {
+          previewDiv.innerHTML =
+            '<div style="color: #ff6b6b; font-size: 12px; padding: 10px;">Ошибка чтения файла</div>';
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      function hideAddPersonForm() {
+        const editPanel = document.getElementById("editPanel");
+        if (editPanel) {
+          editPanel.classList.remove("active");
+          setTimeout(() => {
+            if (editPanel.parentNode) {
+              editPanel.parentNode.removeChild(editPanel);
+            }
+          }, 200);
+        }
+        parentsPage = { male: 1, female: 1 };
+        childrenPage = 1;
+      }
+
+      function addNewPerson() {
+        const surname = document.getElementById("addSurname").value.trim();
+        const firstname = document.getElementById("addFirstname").value.trim();
+        const middlename = document
+          .getElementById("addMiddlename")
+          .value.trim();
+        const day = document.getElementById("addBirthDay").value.trim();
+        const month = document.getElementById("addBirthMonth").value;
+        const year = document.getElementById("addBirthYear").value.trim();
+
+        // Формируем дату
+        let birthDate = "";
+        if (day || month || year) {
+          // Добавляем ведущие нули если нужно
+          const formattedDay = day.padStart(2, "0");
+          const formattedYear = year.padStart(4, "20"); // Если ввели 90, будет 2090
+
+          birthDate = `${formattedDay}.${month}.${formattedYear}`;
+        }
+
+        const birthPlace = document
+          .getElementById("addBirthPlace")
+          .value.trim();
+        const profession = document
+          .getElementById("addProfession")
+          .value.trim();
+        let generation = parseInt(
+          document.getElementById("addGeneration").value,
+        );
+        const gender = document.getElementById("addGender").value;
+
+        const selectedMaleParent = document.querySelector(
+          'input[name="maleParent"]:checked',
+        );
+        const selectedFemaleParent = document.querySelector(
+          'input[name="femaleParent"]:checked',
+        );
+        const selectedParents = [];
+
+        if (selectedMaleParent)
+          selectedParents.push(parseInt(selectedMaleParent.value));
+        if (selectedFemaleParent)
+          selectedParents.push(parseInt(selectedFemaleParent.value));
+
+        const selectedChildren = [];
+        document
+          .querySelectorAll(".children-checkbox:checked")
+          .forEach((checkbox) =>
+            selectedChildren.push(parseInt(checkbox.value)),
+          );
+
+        if (!surname || !firstname) {
+          showNotification("Заполните обязательные поля: Фамилия и Имя");
+          return;
+        }
+
+        if (generation === 0) {
+          familyMembers.forEach((member) => {
+            member.generation += 1;
+          });
+          generation = 1;
+          maxGeneration += 1;
+        }
+
+        if (generation > maxGeneration) {
+          maxGeneration = generation;
+        }
+
+        const photoFile = document.getElementById("addPhoto");
+        const existingGenMembers = familyMembers.filter(
+          (m) => m.generation === generation,
+        );
+        const x =
+          (existingGenMembers.length - (existingGenMembers.length - 1) / 2) *
+          300;
+        const y = (generation - 1) * 300;
+
+        const newPerson = {
+          id: nextId++,
+          surname,
+          firstname,
+          middlename,
+          birthDate,
+          birthPlace,
+          profession,
+          gender,
+          generation,
+          parents: selectedParents,
+          children: [],
+          spouse: null,
+          loves: [],
+          position: existingGenMembers.length + 1,
+          photo: null,
+          photoColor: "#aaaaaa",
+          x,
+          y,
+        };
+
+        let filesToLoad = 0;
+        let filesLoaded = 0;
+
+        const hasPhoto =
+          photoFile.files[0] || photoFile.dataset.compressedImage;
+
+        if (hasPhoto) filesToLoad++;
+
+        function completePersonAddition() {
+          filesLoaded++;
+
+          if (filesLoaded >= filesToLoad || filesToLoad === 0) {
+            selectedParents.forEach((parentId) => {
+              const parent = familyMembers.find((m) => m.id === parentId);
+              if (parent) {
+                if (!parent.children) parent.children = [];
+                if (!parent.children.includes(newPerson.id)) {
+                  parent.children.push(newPerson.id);
+                }
+              }
+            });
+
+            selectedChildren.forEach((childId) => {
+              const child = familyMembers.find((m) => m.id === childId);
+              if (child) {
+                if (!child.parents) child.parents = [];
+                if (!child.parents.includes(newPerson.id)) {
+                  child.parents.push(newPerson.id);
+                }
+              }
+              if (!newPerson.children.includes(childId)) {
+                newPerson.children.push(childId);
+              }
+            });
+
+            familyMembers.push(newPerson);
+
+            generateFamilyTree();
+
+            // editMode = false;
+            // updateControlsVisibility();
+
+            showNotification(
+              `Добавлен: ${newPerson.surname} ${newPerson.firstname} ${newPerson.middlename}`,
+            );
+          }
+        }
+
+        if (photoFile.dataset.compressedImage) {
+          newPerson.photo = photoFile.dataset.compressedImage;
+          completePersonAddition();
+        } else if (photoFile.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+              canvas.width = 900;
+              canvas.height = 120;
+              ctx.fillStyle = "white";
+              ctx.fillRect(0, 0, 900, 1200);
+
+              const imgRatio = img.width / img.height;
+              const targetRatio = 900 / 1200;
+
+              let drawWidth, drawHeight, offsetX, offsetY;
+
+              if (imgRatio > targetRatio) {
+                drawHeight = 120;
+                drawWidth = 120 * imgRatio;
+                offsetX = (900 - drawWidth) / 2;
+                offsetY = 0;
+              } else {
+                drawWidth = 900;
+                drawHeight = 900 / imgRatio;
+                offsetX = 0;
+                offsetY = (120 - drawHeight) / 2;
+              }
+
+              ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+              newPerson.photo = canvas.toDataURL("image/jpeg", 0.7);
+              completePersonAddition();
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(photoFile.files[0]);
+        } else if (!hasPhoto) {
+          if (filesToLoad === 0) filesToLoad = 1;
+          completePersonAddition();
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", function () {
+        loadInitialTree();
+        updateControlsVisibility();
+        bindControlButtons();
+        initializeStarfield();
+      });
+
+      // В начале скрипта, после других переменных
+      let starfield = null;
+      let starsLayer1 = null;
+      let starsLayer2 = null;
+      let starsLayer3 = null;
+      let starsLayerColors = null;
+
+      // Функция для создания случайных позиций звезд
+      function generateRandomPositions() {
+        const positions = {};
+        for (let i = 1; i <= 30; i++) {
+          positions[`random-x${i}`] = Math.random() * 100;
+          positions[`random-y${i}`] = Math.random() * 100;
+        }
+        return positions;
+      }
+
+      // Функция инициализации звездного неба
+      function initializeStarfield() {
+        const starfieldDiv = document.createElement("div");
+        starfieldDiv.id = "starfield";
+
+        // Создаем слои звезд
+        const layer1 = document.createElement("div");
+        layer1.className = "stars-layer-1";
+        const layer2 = document.createElement("div");
+        layer2.className = "stars-layer-2";
+        const layer3 = document.createElement("div");
+        layer3.className = "stars-layer-3";
+        const layerColors = document.createElement("div");
+        layerColors.className = "stars-layer-colors";
+
+        // Создаем туманности
+        const nebula1 = document.createElement("div");
+        nebula1.className = "nebula nebula-1";
+        const nebula2 = document.createElement("div");
+        nebula2.className = "nebula nebula-2";
+        const nebula3 = document.createElement("div");
+        nebula3.className = "nebula nebula-3";
+
+        // Добавляем все в контейнер
+        starfieldDiv.appendChild(layer1);
+        starfieldDiv.appendChild(layer2);
+        starfieldDiv.appendChild(layer3);
+        starfieldDiv.appendChild(layerColors);
+        starfieldDiv.appendChild(nebula1);
+        starfieldDiv.appendChild(nebula2);
+        starfieldDiv.appendChild(nebula3);
+
+        document.body.appendChild(starfieldDiv);
+
+        // Сохраняем ссылки
+        starfield = starfieldDiv;
+        starsLayer1 = layer1;
+        starsLayer2 = layer2;
+        starsLayer3 = layer3;
+        starsLayerColors = layerColors;
+
+        // Устанавливаем случайные позиции звезд
+        const positions = generateRandomPositions();
+        for (const [key, value] of Object.entries(positions)) {
+          document.documentElement.style.setProperty(`--${key}`, value);
+        }
+
+        // Начальное обновление позиций
+        updateStarfieldPosition();
+      }
+
+      // Функция обновления позиций звездного неба
+      function updateStarfieldPosition() {
+        if (!starsLayer1 || !starsLayer2 || !starsLayer3 || !starsLayerColors)
+          return;
+
+        // Параллакс-эффект: разные слои двигаются с разной скоростью
+        const parallax1 = 0.1; // Самые дальние - медленнее
+        const parallax2 = 0.2;
+        const parallax3 = 0.3; // Самые ближние - быстрее
+        const parallaxColors = 0.15;
+
+        // Рассчитываем смещение для каждого слоя
+        const offsetX1 = offsetX * parallax1;
+        const offsetY1 = offsetY * parallax1;
+        const offsetX2 = offsetX * parallax2;
+        const offsetY2 = offsetY * parallax2;
+        const offsetX3 = offsetX * parallax3;
+        const offsetY3 = offsetY * parallax3;
+        const offsetXColors = offsetX * parallaxColors;
+        const offsetYColors = offsetY * parallaxColors;
+
+        // Масштабирование звезд (при увеличении они "приближаются")
+        const scaleFactor1 = 1 + (scale - 1) * 0.1;
+        const scaleFactor2 = 1 + (scale - 1) * 0.2;
+        const scaleFactor3 = 1 + (scale - 1) * 0.3;
+        const scaleFactorColors = 1 + (scale - 1) * 0.15;
+
+        // Применяем трансформации
+        starsLayer1.style.transform = `translate(${offsetX1}px, ${offsetY1}px) scale(${scaleFactor1})`;
+        starsLayer2.style.transform = `translate(${offsetX2}px, ${offsetY2}px) scale(${scaleFactor2})`;
+        starsLayer3.style.transform = `translate(${offsetX3}px, ${offsetY3}px) scale(${scaleFactor3})`;
+        starsLayerColors.style.transform = `translate(${offsetXColors}px, ${offsetYColors}px) scale(${scaleFactorColors})`;
+      }
+
+      // Простой троттлинг для частых операций
+      let lastAnimationFrame = 0;
+      const TARGET_FPS = 60;
+      const FRAME_TIME = 1000 / TARGET_FPS;
+
+      function throttleAnimation(callback) {
+        const now = Date.now();
+        if (now - lastAnimationFrame >= FRAME_TIME) {
+          lastAnimationFrame = now;
+          requestAnimationFrame(callback);
+        }
+      }
+
+      // Оптимизируем частые обновления в обработчике mousemove:
+      document.addEventListener("mousemove", function (e) {
+        if (isDraggingPerson && draggedPerson) {
+          e.preventDefault();
+
+          const treeContainerRect = treeContainer.getBoundingClientRect();
+          const mouseX = e.clientX - treeContainerRect.left;
+          const mouseY = e.clientY - treeContainerRect.top;
+
+          const elementX = (mouseX - offsetX) / scale - dragOffsetX;
+          const elementY = (mouseY - offsetY) / scale - dragOffsetY;
+
+          draggedPerson.style.left = `${elementX}px`;
+          draggedPerson.style.top = `${elementY}px`;
+
+          updatePanelPosition();
+
+          // Троттлинг перерисовки линий
+          throttleAnimation(() => {
+            drawConnections();
+          });
+        } else if (isDragging) {
+          offsetX = e.clientX - startX;
+          offsetY = e.clientY - startY;
+          updateTreePosition();
+          updatePanelPosition();
+        }
+      });
+
+      function resetToDefaultZoom() {
+        // Если уже на 100%, ничего не делаем
+        if (Math.abs(scale - 1) < 0.01) {
+          showNotification("Уже 100% масштаб");
+          return;
+        }
+
+        // Сохраняем позицию, на которую смотрит пользователь
+        const treeContainer = document.getElementById("treeContainer");
+        const containerRect = treeContainer.getBoundingClientRect();
+
+        // Координаты центра экрана
+        const centerX = containerRect.width / 2;
+        const centerY = containerRect.height / 2;
+
+        // Что видно в центре экрана сейчас (в координатах дерева)
+        const currentCenterX = (centerX - offsetX) / scale;
+        const currentCenterY = (centerY - offsetY) / scale;
+
+        // Вычисляем новые offset так, чтобы этот же объект остался в центре
+        const targetScale = 1;
+        const targetOffsetX = centerX - currentCenterX * targetScale;
+        const targetOffsetY = centerY - currentCenterY * targetScale;
+
+        // Плавная анимация
+        const duration = 350;
+        const startScale = scale;
+        const startOffsetX = offsetX;
+        const startOffsetY = offsetY;
+        const startTime = Date.now();
+
+        function easeOutCubic(t) {
+          return 1 - Math.pow(1 - t, 3);
+        }
+
+        function animate() {
+          const currentTime = Date.now();
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const easedProgress = easeOutCubic(progress);
+
+          // Плавно меняем и scale и offset
+          scale = startScale + (targetScale - startScale) * easedProgress;
+          offsetX =
+            startOffsetX + (targetOffsetX - startOffsetX) * easedProgress;
+          offsetY =
+            startOffsetY + (targetOffsetY - startOffsetY) * easedProgress;
+
+          // Обновляем
+          updateTreePosition();
+          updateStarfieldPosition(true);
+
+          // Перерисовываем линии при значительном изменении
+          if (Math.abs(scale - startScale) > 0.1) {
+            drawConnections();
+          }
+
+          // Продолжаем анимацию
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            // Финализируем
+            scale = targetScale;
+            offsetX = targetOffsetX;
+            offsetY = targetOffsetY;
+            updateTreePosition();
+            drawConnections();
+            showNotification("Масштаб сброшен к 100%");
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      // Функция плавной анимации к позиции
+      function animateToPosition(targetScale, targetX, targetY) {
+        // Параметры анимации
+        const duration = 500; // 0.5 секунды
+        const startScale = scale;
+        const startX = offsetX;
+        const startY = offsetY;
+        const startTime = Date.now();
+
+        // Easing функция для плавности
+        function easeInOutCubic(t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function animate() {
+          const currentTime = Date.now();
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const easedProgress = easeInOutCubic(progress);
+
+          // Интерполируем значения
+          scale = startScale + (targetScale - startScale) * easedProgress;
+          offsetX = startX + (targetX - startX) * easedProgress;
+          offsetY = startY + (targetY - startY) * easedProgress;
+
+          // Обновляем позиции
+          updateTreePosition();
+          updateStarfieldPosition(true); // Немедленное обновление звезд
+
+          // Если анимация не завершена, продолжаем
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            // Завершаем анимацию
+            scale = targetScale;
+            offsetX = targetX;
+            offsetY = targetY;
+            updateTreePosition();
+            drawConnections();
+          }
+        }
+
+        // Запускаем анимацию
+        requestAnimationFrame(animate);
+      }
+    </script>
+  </body>
+</html>
